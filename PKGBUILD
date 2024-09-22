@@ -7,7 +7,7 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=1868f9d0260e9afaf7c6436d14923ae12eaea465
+_commit=88264981f2082248e892a706b2c5004650faac54
 _rc=rc0
 pkgbase=linux${_basever}
 pkgname=("$pkgbase" "$pkgbase-headers")
@@ -51,6 +51,9 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         # Steamdeck (OLED)
         0001-steam-deck.patch
         0002-steamdeck-oled-audio.patch
+        # Temp Reverts
+        # https://forums.developer.nvidia.com/t/error-const-struct-drm-mode-config-funcs-has-no-member-named-output-poll-changed/306078
+        revert-nvidia-446d0f48.patch
 )
 
 if [[ ! -z "$_commit" ]]; then
@@ -61,7 +64,7 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('69b628e0d899a6b9ba3613e3751f0f889f2841bad1ac904c5502d4827c350788'
+sha256sums=('0201e3f315773243f108f529a6e962a967611d7036acd2447802eccf5dc07320'
             'b6feb0624ffbe147c2e0d8f444df2dc0b26b97f95ac5b9057b85aae1bd9d7d71'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
@@ -83,7 +86,8 @@ sha256sums=('69b628e0d899a6b9ba3613e3751f0f889f2841bad1ac904c5502d4827c350788'
             'c3360c0c62ad02d9ee92edafe1b2c8e928e0f4ff0100fb3e900171a4dd3aec54'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
-            '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
+            '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88'
+            'ed8cb385081fedb9d3aa8ce89400ddf7008897adfaba3ec0a3f529ee88da91b7')
 
 prepare() {
   cd "$_srcdir"
