@@ -1,7 +1,7 @@
-From 00d3eec12bd69647bf5ce32050cfccaa3cc226b9 Mon Sep 17 00:00:00 2001
+From a76cc479f3fd358f4140b0b3b7539644be0663b8 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
-Subject: [PATCH 16/18] hid-asus-ally: Add full gamepad support
+Subject: [PATCH 19/21] hid-asus-ally: Add full gamepad support
 
 This driver adds full support of the ASUS ROG Ally gamepad:
 
@@ -66,10 +66,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
  drivers/hid/Kconfig         |    9 +
  drivers/hid/Makefile        |    1 +
- drivers/hid/hid-asus-ally.c | 2316 +++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-asus-ally.c | 2450 +++++++++++++++++++++++++++++++++++
  drivers/hid/hid-asus-ally.h |  544 ++++++++
  drivers/hid/hid-asus.c      |   20 +-
- 5 files changed, 2888 insertions(+), 2 deletions(-)
+ 5 files changed, 3022 insertions(+), 2 deletions(-)
  create mode 100644 drivers/hid/hid-asus-ally.c
  create mode 100644 drivers/hid/hid-asus-ally.h
 
@@ -107,10 +107,10 @@ index e40f1ddebbb7..2b2aa8b6f828 100644
  obj-$(CONFIG_HID_BETOP_FF)	+= hid-betopff.o
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
 new file mode 100644
-index 000000000000..42a703c157f5
+index 000000000000..93a97ae36dee
 --- /dev/null
 +++ b/drivers/hid/hid-asus-ally.c
-@@ -0,0 +1,2316 @@
+@@ -0,0 +1,2450 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + *  HID driver for Asus ROG laptops and Ally
@@ -123,6 +123,7 @@ index 000000000000..42a703c157f5
 +#include "linux/err.h"
 +#include "linux/input-event-codes.h"
 +#include "linux/kstrtox.h"
++#include "linux/pm.h"
 +#include "linux/slab.h"
 +#include "linux/stddef.h"
 +#include "linux/sysfs.h"
@@ -150,16 +151,15 @@ index 000000000000..42a703c157f5
 +#define FEATURE_KBD_LED_REPORT_ID1 0x5d
 +#define FEATURE_KBD_LED_REPORT_ID2 0x5e
 +
-+enum ROG_ALLY_TYPE {
-+	ROG_ALLY_TYPE,
-+	ROG_ALLY_TYPE_X,
-+};
++#define ALLY_MIN_BIOS 319
++#define ALLY_X_MIN_BIOS 313
++
++static const u8 EC_MODE_LED_APPLY[] = {0x5d, 0xb4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
++static const u8 EC_MODE_LED_SET[] = {0x5d, 0xb5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 +
 +static const struct hid_device_id rog_ally_devices[] = {
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY),
-+	  .driver_data = ROG_ALLY_TYPE },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X),
-+	  .driver_data = ROG_ALLY_TYPE_X },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY)},
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X)},
 +	{}
 +};
 +
@@ -348,6 +348,7 @@ index 000000000000..42a703c157f5
 +	struct led_classdev led_bright_dev;
 +	struct led_classdev_mc led_rgb_dev;
 +	struct work_struct work;
++	bool output_worker_initialized;
 +	spinlock_t lock;
 +
 +	bool removed;
@@ -429,6 +430,7 @@ index 000000000000..42a703c157f5
 +				  HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
 +}
 +
++/* Send a request. Note that the input buffer is duplicated */
 +static int asus_dev_set_report(struct hid_device *hdev, const u8 *buf, size_t buf_size)
 +{
 +	unsigned char *dmabuf;
@@ -677,7 +679,6 @@ index 000000000000..42a703c157f5
 +
 +static struct ally_x_device *ally_x_create(struct hid_device *hdev)
 +{
-+	uint8_t max_output_report_size;
 +	struct ally_x_device *ally_x;
 +	struct ff_report *report;
 +	int ret;
@@ -693,7 +694,6 @@ index 000000000000..42a703c157f5
 +	ally_x->qam_btns_steam_mode =
 +		true; /* Always default to steam mode, it can be changed by userspace attr */
 +
-+	max_output_report_size = sizeof(struct ally_x_input_report);
 +	report = devm_kzalloc(&hdev->dev, sizeof(*report), GFP_KERNEL);
 +	if (!report) {
 +		ret = -ENOMEM;
@@ -2018,6 +2018,30 @@ index 000000000000..42a703c157f5
 +	spin_unlock_irqrestore(&led->lock, flags);
 +}
 +
++static void ally_led_set_static_from_multicolour(void)
++{
++	struct ally_rgb_leds *led;
++	/*                                             zone, mode,  R     G     B */
++	u8 buf[] = { FEATURE_KBD_LED_REPORT_ID1, 0xb3, 0x00, 0x00, 0x00, 0x00, 0x00,
++		     0x00, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
++
++	if (!drvdata.led_rgb || drvdata.led_rgb->removed || !drvdata.led_rgb->rgb_software_mode)
++		return;
++
++	/* Set single zone single colour based on the first LED of EC software mode */
++	led = drvdata.led_rgb;
++	buf[4] = led->gamepad_red[0];
++	buf[5] = led->gamepad_green[0];
++	buf[6] = led->gamepad_blue[0];
++
++	if (asus_dev_set_report(led->hdev, buf, sizeof(buf)) < 0)
++		hid_err(led->hdev, "Ally failed to write static colour\n");
++	if (asus_dev_set_report(led->hdev, EC_MODE_LED_SET, sizeof(EC_MODE_LED_SET)) < 0)
++		hid_err(led->hdev, "Ally failed to set static colour\n");
++	if (asus_dev_set_report(led->hdev, EC_MODE_LED_APPLY, sizeof(EC_MODE_LED_APPLY)) < 0)
++		hid_err(led->hdev, "Ally failed to apply static colour\n");
++}
++
 +static void ally_led_do_brightness(struct work_struct *work)
 +{
 +	struct ally_rgb_leds *led = container_of(work, struct ally_rgb_leds, work);
@@ -2107,20 +2131,23 @@ index 000000000000..42a703c157f5
 +	return brightness;
 +}
 +
-+static void ally_set_rgb_brightness(struct led_classdev *cdev, enum led_brightness brightness)
++static void ally_set_rgb(struct led_classdev *cdev, enum led_brightness brightness)
 +{
 +	struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
 +	struct ally_rgb_leds *led = container_of(mc_cdev, struct ally_rgb_leds, led_rgb_dev);
++	int intensity, bright;
 +	unsigned long flags;
 +
 +	led_mc_calc_color_components(mc_cdev, brightness);
 +	spin_lock_irqsave(&led->lock, flags);
 +	led->update_rgb = true;
 +	led->rgb_software_mode = true;
++	bright = mc_cdev->led_cdev.brightness;
 +	for (int i = 0; i < 4; i++) {
-+		led->gamepad_red[i] = mc_cdev->subled_info[i * 3].brightness;
-+		led->gamepad_green[i] = mc_cdev->subled_info[i * 3 + 1].brightness;
-+		led->gamepad_blue[i] = mc_cdev->subled_info[i * 3 + 2].brightness;
++		intensity = mc_cdev->subled_info[i].intensity;
++		led->gamepad_red[i] = (((intensity >> 16) & 0xFF) * bright) / 255;
++		led->gamepad_green[i] = (((intensity >> 8) & 0xFF) * bright) / 255;
++		led->gamepad_blue[i] = ((intensity & 0xFF) * bright) / 255;
 +	}
 +	spin_unlock_irqrestore(&led->lock, flags);
 +
@@ -2152,30 +2179,19 @@ index 000000000000..42a703c157f5
 +	if (!mc_led_info)
 +		return -ENOMEM;
 +
-+	mc_led_info[0].color_index = LED_COLOR_ID_RED;
-+	mc_led_info[1].color_index = LED_COLOR_ID_GREEN;
-+	mc_led_info[2].color_index = LED_COLOR_ID_BLUE;
-+
-+	mc_led_info[3].color_index = LED_COLOR_ID_RED;
-+	mc_led_info[4].color_index = LED_COLOR_ID_GREEN;
-+	mc_led_info[5].color_index = LED_COLOR_ID_BLUE;
-+
-+	mc_led_info[6].color_index = LED_COLOR_ID_RED;
-+	mc_led_info[7].color_index = LED_COLOR_ID_GREEN;
-+	mc_led_info[8].color_index = LED_COLOR_ID_BLUE;
-+
-+	mc_led_info[9].color_index = LED_COLOR_ID_RED;
-+	mc_led_info[10].color_index = LED_COLOR_ID_GREEN;
-+	mc_led_info[11].color_index = LED_COLOR_ID_BLUE;
++	mc_led_info[0].color_index = LED_COLOR_ID_RGB;
++	mc_led_info[1].color_index = LED_COLOR_ID_RGB;
++	mc_led_info[2].color_index = LED_COLOR_ID_RGB;
++	mc_led_info[3].color_index = LED_COLOR_ID_RGB;
 +
 +	led_rgb->led_rgb_dev.subled_info = mc_led_info;
-+	led_rgb->led_rgb_dev.num_colors = 3 * 4;
++	led_rgb->led_rgb_dev.num_colors = 4;
 +
 +	led_cdev = &led_rgb->led_rgb_dev.led_cdev;
 +	led_cdev->name = "ally:rgb:joystick_rings";
 +	led_cdev->brightness = 128;
 +	led_cdev->max_brightness = 255;
-+	led_cdev->brightness_set = ally_set_rgb_brightness;
++	led_cdev->brightness_set = ally_set_rgb;
 +
 +	return devm_led_classdev_multicolor_register(&hdev->dev, &led_rgb->led_rgb_dev);
 +}
@@ -2214,6 +2230,7 @@ index 000000000000..42a703c157f5
 +	}
 +
 +	INIT_WORK(&led_rgb->work, ally_led_work);
++	led_rgb->output_worker_initialized = true;
 +	spin_lock_init(&led_rgb->lock);
 +
 +	led_rgb->update_bright = true;
@@ -2229,6 +2246,7 @@ index 000000000000..42a703c157f5
 +
 +	spin_lock_irqsave(&led_rgb->lock, flags);
 +	led_rgb->removed = true;
++	led_rgb->output_worker_initialized = false;
 +	spin_unlock_irqrestore(&led_rgb->lock, flags);
 +	cancel_work_sync(&led_rgb->work);
 +}
@@ -2262,6 +2280,78 @@ index 000000000000..42a703c157f5
 +	return 0;
 +}
 +
++/*
++ * Very simple parse. We don't care about any other part of the string except the version section.
++ * Example strings: FGA80100.RC72LA.312_T01, FGA80100.RC71LS.318_T01
++ */
++ static int parse_version_string(const u8 *response, size_t response_size)
++ {
++	size_t i;
++	int dot_count = 0;
++
++	// Look for the second '.' to identify the start of the version
++	for (i = 0; i < response_size; i++) {
++		if (response[i] == '.') {
++			dot_count++;
++			if (dot_count == 2) {
++				int version = simple_strtol((const char *)&response[i + 1], NULL, 10);
++				if (version >= 0) {
++					return version;
++				} else {
++					return -EINVAL;
++				}
++			}
++		}
++	}
++
++	return -EINVAL;
++ }
++
++static int ally_request_mcu_version(struct hid_device *hdev)
++{
++	const u8 request[] = {0x5a, 0x05, 0x03, 0x31, 0x00, 0x20};
++	size_t response_size = FEATURE_ROG_ALLY_REPORT_SIZE;
++	u8 *response;
++	int ret;
++
++	response = kzalloc(response_size, GFP_KERNEL);
++	if (!response) {
++		kfree(request);
++		return -ENOMEM;
++	}
++
++	ret = asus_dev_set_report(hdev, request, sizeof(request));
++	if (ret < 0)
++		goto error;
++
++	ret = asus_dev_get_report(hdev, response, response_size);
++	if (ret < 0)
++		goto error;
++
++	ret = parse_version_string(response, response_size);
++	if (ret < 0)
++		goto error;
++
++	goto cleanup;
++
++error:
++	hid_err(hdev, "Failed to get MCU version: %d\n", ret);
++cleanup:
++	kfree(response);
++
++	return ret;
++}
++
++static void maybe_mcu_version_warn(struct hid_device *hdev, int minv, int version) {
++	hid_info(hdev, "Ally device MCU version: %d\n", version);
++	if (version <= minv) {
++		hid_warn(hdev, "The MCU version must be %d or greater\n"
++				"Please update your MCU with official ASUS firmware release "
++				"which has bug fixes to make the Linux experience better\n",
++				minv);
++	}
++}
++
 +static int ally_gamepad_init(struct hid_device *hdev, u8 report_id)
 +{
 +	const u8 buf[] = { report_id, 0x41, 0x53, 0x55, 0x53, 0x20, 0x54, 0x65,
@@ -2279,6 +2369,8 @@ index 000000000000..42a703c157f5
 +{
 +	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 +	struct usb_host_endpoint *ep = intf->cur_altsetting->endpoint;
++	struct usb_device *udev = interface_to_usbdev(intf);
++	u16 idProduct = le16_to_cpu(udev->descriptor.idProduct);
 +	int ret;
 +
 +	if (ep->desc.bEndpointAddress != ALLY_CFG_INTF_IN_ADDRESS &&
@@ -2321,6 +2413,18 @@ index 000000000000..42a703c157f5
 +
 +	/* This should almost always exist */
 +	if (ep->desc.bEndpointAddress == ALLY_CFG_INTF_IN_ADDRESS) {
++		ret = ally_request_mcu_version(hdev);
++		if (ret) {
++			switch (idProduct) {
++			case USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY:
++				maybe_mcu_version_warn(hdev, ALLY_MIN_BIOS, ret);
++				break;
++			case USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X:
++				maybe_mcu_version_warn(hdev, ALLY_X_MIN_BIOS, ret);
++				break;
++			}
++		}
++
 +		drvdata.led_rgb = ally_gamepad_rgb_create(hdev);
 +		if (IS_ERR(drvdata.led_rgb))
 +			hid_err(hdev, "Failed to create Ally gamepad LEDs.\n");
@@ -2363,7 +2467,7 @@ index 000000000000..42a703c157f5
 +	return ret;
 +}
 +
-+static void ally_remove(struct hid_device *hdev)
++static void ally_hid_remove(struct hid_device *hdev)
 +{
 +	if (drvdata.ally_x)
 +		ally_x_remove(hdev);
@@ -2371,11 +2475,12 @@ index 000000000000..42a703c157f5
 +		ally_rgb_remove(hdev);
 +	if (drvdata.gamepad_cfg)
 +		ally_cfg_remove(hdev);
++
 +	hid_hw_close(hdev);
 +	hid_hw_stop(hdev);
 +}
 +
-+static int ally_resume(struct hid_device *hdev)
++static int ally_hid_resume(struct hid_device *hdev)
 +{
 +	int ret;
 +
@@ -2396,8 +2501,33 @@ index 000000000000..42a703c157f5
 +		schedule_work(&drvdata.ally_x->output_worker);
 +	}
 +
-+	return ret;
++	if (drvdata.led_rgb && drvdata.led_rgb->output_worker_initialized) {
++		drvdata.led_rgb->update_bright = true;
++		ally_schedule_work(drvdata.led_rgb);
++	}
++
++	return 0;
 +}
++
++static int ally_thaw(struct device *dev)
++{
++	struct hid_device *hdev = to_hid_device(dev);
++
++	return ally_hid_resume(hdev);
++}
++
++static int ally_suspend(struct device *dev)
++{
++	ally_led_set_static_from_multicolour();
++
++	return 0;
++}
++
++static const struct dev_pm_ops ally_pm_ops = {
++	.thaw = ally_thaw,
++	.suspend = ally_suspend,
++	.poweroff = ally_suspend,
++};
 +
 +MODULE_DEVICE_TABLE(hid, rog_ally_devices);
 +
@@ -2405,10 +2535,14 @@ index 000000000000..42a703c157f5
 +	.name = "asus_rog_ally",
 +	.id_table = rog_ally_devices,
 +	.probe = ally_probe,
-+	.remove = ally_remove,
++	.remove = ally_hid_remove,
++	/* HID is the better place for resume functions, not pm_ops */
++	.resume = ally_hid_resume,
++	.reset_resume = ally_hid_resume,
 +	.raw_event = ally_raw_event,
-+	.resume = ally_resume,
-+	.reset_resume = ally_resume,
++	.driver = {
++		.pm = &ally_pm_ops,
++	}
 +};
 +
 +static int __init rog_ally_cfg_init(void)
@@ -2978,7 +3112,7 @@ index 000000000000..252d9f126e32
 +	btn_pair_side_right = 0x01,
 +};
 diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-index 659cf9c96e26..528c210f9e8c 100644
+index 07bbe3cc48a9..567087401159 100644
 --- a/drivers/hid/hid-asus.c
 +++ b/drivers/hid/hid-asus.c
 @@ -52,6 +52,10 @@ MODULE_DESCRIPTION("Asus HID Keyboard and TouchPad");
@@ -3032,5 +3166,5 @@ index 659cf9c96e26..528c210f9e8c 100644
  	    USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD),
  	  QUIRK_ROG_CLAYMORE_II_KEYBOARD },
 -- 
-2.46.0
+2.46.2
 

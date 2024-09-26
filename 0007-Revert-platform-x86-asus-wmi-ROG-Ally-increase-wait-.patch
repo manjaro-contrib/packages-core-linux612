@@ -1,0 +1,60 @@
+From 52b58670012d87c782682f706c760e6fe688a75f Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Tue, 24 Sep 2024 19:30:34 +1200
+Subject: [PATCH 07/21] Revert "platform/x86: asus-wmi: ROG Ally increase wait
+ time, allow MCU powersave"
+
+This reverts commit 7e7a5dee49732ed01a3a17c9a3edf027fb9457fe.
+
+This is part of some hacks that are no-longer required when users have
+updated their MCU firmware to the latest version:
+- Ally 1: v319
+- Ally X: v313
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/asus-wmi.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 08861792bddd..8daefd9a0d94 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -146,7 +146,7 @@ module_param(fnlock_default, bool, 0444);
+ /* Controls the power state of the USB0 hub on ROG Ally which input is on */
+ #define ASUS_USB0_PWR_EC0_CSEE "\\_SB.PCI0.SBRG.EC0.CSEE"
+ /* 300ms so far seems to produce a reliable result on AC and battery */
+-#define ASUS_USB0_PWR_EC0_CSEE_WAIT 1500
++#define ASUS_USB0_PWR_EC0_CSEE_WAIT 300
+ 
+ static const char * const ashs_ids[] = { "ATK4001", "ATK4002", NULL };
+ 
+@@ -4971,7 +4971,6 @@ static int asus_hotk_resume_early(struct device *device)
+ 	struct asus_wmi *asus = dev_get_drvdata(device);
+ 
+ 	if (asus->ally_mcu_usb_switch) {
+-		/* sleep required to prevent USB0 being yanked then reappearing rapidly */
+ 		if (ACPI_FAILURE(acpi_execute_simple_method(NULL, ASUS_USB0_PWR_EC0_CSEE, 0xB8)))
+ 			dev_err(device, "ROG Ally MCU failed to connect USB dev\n");
+ 		else
+@@ -4983,8 +4982,17 @@ static int asus_hotk_resume_early(struct device *device)
+ static int asus_hotk_prepare(struct device *device)
+ {
+ 	struct asus_wmi *asus = dev_get_drvdata(device);
++	int result, err;
+ 
+ 	if (asus->ally_mcu_usb_switch) {
++		/* When powersave is enabled it causes many issues with resume of USB hub */
++		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_MCU_POWERSAVE);
++		if (result == 1) {
++			dev_warn(device, "MCU powersave enabled, disabling to prevent resume issues");
++			err = asus_wmi_set_devstate(ASUS_WMI_DEVID_MCU_POWERSAVE, 0, &result);
++			if (err || result != 1)
++				dev_err(device, "Failed to set MCU powersave mode: %d\n", err);
++		}
+ 		/* sleep required to ensure USB0 is disabled before sleep continues */
+ 		if (ACPI_FAILURE(acpi_execute_simple_method(NULL, ASUS_USB0_PWR_EC0_CSEE, 0xB7)))
+ 			dev_err(device, "ROG Ally MCU failed to disconnect USB dev\n");
+-- 
+2.46.2
+

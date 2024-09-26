@@ -7,12 +7,12 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=88264981f2082248e892a706b2c5004650faac54
+_commit=11a299a7933e03c83818b431e6a1c53ad387423d
 _rc=rc0
 pkgbase=linux${_basever}
 pkgname=("$pkgbase" "$pkgbase-headers")
 pkgver=6.12.0rc0
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=('GPL2')
@@ -36,16 +36,19 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         0003-iio-bmi323-peripheral-in-lowest-power-state-on-suspe.patch
         # ROG ALLY Patches (stable)
         0004-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
-        0007-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
-        0008-drm-Notify-the-suspend-core-when-displays-are-change.patch
-        0009-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
-        0010-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
-        0011-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
-        0012-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
-        0013-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
-        0014-platform-x86-asus-armoury-add-core-count-control.patch
-        0015-platform-x86-asus-wmi-deprecate-bios-features.patch
-        0016-hid-asus-ally-Add-full-gamepad-support.patch
+        0007-Revert-platform-x86-asus-wmi-ROG-Ally-increase-wait-.patch
+        0008-Revert-platform-x86-asus-wmi-disable-USB0-hub-on-ROG.patch
+        0009-platfom-x86-asus-wmi-cleanup-after-reverts.patch
+        0010-platform-x86-asus-wmi-export-symbols-used-for-read-w.patch
+        0011-hid-asus-Add-MODULE_IMPORT_NS-ASUS_WMI.patch
+        0012-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
+        0013-platform-x86-asus-armoury-add-panel_hd_mode-attribut.patch
+        0014-platform-x86-asus-armoury-add-the-ppt_-and-nv_-tunin.patch
+        0015-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
+        0016-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
+        0017-platform-x86-asus-armoury-add-core-count-control.patch
+        0018-platform-x86-asus-wmi-deprecate-bios-features.patch
+        0019-hid-asus-ally-Add-full-gamepad-support.patch
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Steamdeck (OLED)
@@ -64,7 +67,7 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('0201e3f315773243f108f529a6e962a967611d7036acd2447802eccf5dc07320'
+sha256sums=('2d7951ab267c10a3f5a842c58f81e87804be13e0993e5d305cf882108f6d7e40'
             '9d38e05fef262a7369b8037fedc3854812a0b42e342d1db545c3c027f90ee93d'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
@@ -73,17 +76,20 @@ sha256sums=('0201e3f315773243f108f529a6e962a967611d7036acd2447802eccf5dc07320'
             '02d617ae99e6a6a159dfc7299308c765fb66764148c2c549d40191646c5e2dd4'
             '65b7b008b392693974a319a8a1ab5c1a3492474faf3cb7c45d94a1f4811e0820'
             'd99d7db369b7c4f31b21002914ba1135ecf344b3fb30a01be7d444ead43dd9f9'
-            'f22d038b3ff02bfbcc7ecc81fea434ff669f702cc6681dc41f292c0048e28f19'
-            'cd0a28c004c0a74f77d27a2469013695e75f5b69c50f1fb619ad8db24a292f5f'
-            'bb06dd497cff0450f966c2cb30c28213b49059b9bfb4e847265ebe5075dacd2e'
-            '5051e0988fed9f1e9bccf68448abed960759932fed12f9c6259667b81ca7ab22'
-            '5684a9539b93218d389afbb5c0f8dc75299d4c35605890cc96e50a184102e7c1'
-            '98f052fb99ffc06effe72456151b5e98e0780df718429def3dd9d0fb7d116475'
-            '9bb04bd737c5c7bfc48bef16d99a52e1ba0d8088fcddd723b210f2f7be1282fe'
-            '00882a0a21e4f983c73fa4bf7852857cda587f1e66a42ba80f0cc5c30645d847'
-            'ef98d9148badf4b6e43934ac6b4ebc1987956ac2d01db3609fd1a63f42f09a79'
-            '6885539a78271001cd1cd032646287c7c50b1a65a6bef50791fae8832cef10ea'
-            'c3360c0c62ad02d9ee92edafe1b2c8e928e0f4ff0100fb3e900171a4dd3aec54'
+            '22a21ad2cab7e2fd49c05af52542a42258bec7d561a91e69cfae2c874c682d20'
+            'a6ba3818901e241d205a78d75a1bb3567c553c691ccb4c0c57a8755c7c4b92cf'
+            'd3034c7257e0a5ef1e0874e08f71c3f95ee06c430251f9f200e7e45b8a915190'
+            '860e0ae8fdbf32a15b4863821ae6921afd5881c3fda1b5c359a49f936f62c9de'
+            '0968158598b4facbdfddfd54f3699fcff4838e93dc2f3cc43f3e3a089b374c91'
+            '1fb52285cc605eab44dcc1ba4b7dba29ed2bbdb4ce03eb876b2533c25a48ade9'
+            'b72d5bb3bdd1260159ba56a55b3d449ebb3680c1548504db1be6eabdfe0844c5'
+            '10af89ed1199a098e9db686349e987776858e009f8b742cec5992ac4d0b514aa'
+            '21f64a7192ac6f725a4cc992317797c87d5f750a813ffb0f0b4ebb19f6106f79'
+            'f55525dd8cd8074edd265f5c27f262827c71fcf645004e9251fdfc7b5363ba94'
+            '95a83f8b335a35633f5fad0005f93afc5a83f09f9c5607e0402ccdd64c29b3ac'
+            '8193f2a1748445708e680a536779c01debe88432bba5941e8c34ea10ad5ac683'
+            'd1ed4fbe2e2c7ebb809242ab0e31647f4876230d935d3ceeed0bf91fdba00f91'
+            'ad20f75ed6add3490918b408b9e18a905dfe8425c3853c573653f8f6d3b82ee0'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88'

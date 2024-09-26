@@ -1,0 +1,86 @@
+From 07de32121b9afa5863e930f3c6ce290affd48fdc Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Tue, 24 Sep 2024 19:35:15 +1200
+Subject: [PATCH 08/21] Revert "platform/x86: asus-wmi: disable USB0 hub on ROG
+ Ally before suspend"
+
+This reverts commit e0894ff038d86f30614ec16ec26dacb88c8d2bd4.
+
+This is part of some hacks that are no-longer required when users have
+updated their MCU firmware to the latest version:
+- Ally 1: v319
+- Ally X: v313
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/asus-wmi.c | 40 ---------------------------------
+ 1 file changed, 40 deletions(-)
+
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 8daefd9a0d94..27b9fa2c29ae 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -16,7 +16,6 @@
+ #include <linux/acpi.h>
+ #include <linux/backlight.h>
+ #include <linux/debugfs.h>
+-#include <linux/delay.h>
+ #include <linux/dmi.h>
+ #include <linux/fb.h>
+ #include <linux/hwmon.h>
+@@ -4962,43 +4961,6 @@ static int asus_hotk_resume(struct device *device)
+ 		asus_wmi_fnlock_update(asus);
+ 
+ 	asus_wmi_tablet_mode_get_state(asus);
+-
+-	return 0;
+-}
+-
+-static int asus_hotk_resume_early(struct device *device)
+-{
+-	struct asus_wmi *asus = dev_get_drvdata(device);
+-
+-	if (asus->ally_mcu_usb_switch) {
+-		if (ACPI_FAILURE(acpi_execute_simple_method(NULL, ASUS_USB0_PWR_EC0_CSEE, 0xB8)))
+-			dev_err(device, "ROG Ally MCU failed to connect USB dev\n");
+-		else
+-			msleep(ASUS_USB0_PWR_EC0_CSEE_WAIT);
+-	}
+-	return 0;
+-}
+-
+-static int asus_hotk_prepare(struct device *device)
+-{
+-	struct asus_wmi *asus = dev_get_drvdata(device);
+-	int result, err;
+-
+-	if (asus->ally_mcu_usb_switch) {
+-		/* When powersave is enabled it causes many issues with resume of USB hub */
+-		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_MCU_POWERSAVE);
+-		if (result == 1) {
+-			dev_warn(device, "MCU powersave enabled, disabling to prevent resume issues");
+-			err = asus_wmi_set_devstate(ASUS_WMI_DEVID_MCU_POWERSAVE, 0, &result);
+-			if (err || result != 1)
+-				dev_err(device, "Failed to set MCU powersave mode: %d\n", err);
+-		}
+-		/* sleep required to ensure USB0 is disabled before sleep continues */
+-		if (ACPI_FAILURE(acpi_execute_simple_method(NULL, ASUS_USB0_PWR_EC0_CSEE, 0xB7)))
+-			dev_err(device, "ROG Ally MCU failed to disconnect USB dev\n");
+-		else
+-			msleep(ASUS_USB0_PWR_EC0_CSEE_WAIT);
+-	}
+ 	return 0;
+ }
+ 
+@@ -5046,8 +5008,6 @@ static const struct dev_pm_ops asus_pm_ops = {
+ 	.thaw = asus_hotk_thaw,
+ 	.restore = asus_hotk_restore,
+ 	.resume = asus_hotk_resume,
+-	.resume_early = asus_hotk_resume_early,
+-	.prepare = asus_hotk_prepare,
+ };
+ 
+ /* Registration ***************************************************************/
+-- 
+2.46.2
+
