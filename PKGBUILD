@@ -7,7 +7,7 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=11a299a7933e03c83818b431e6a1c53ad387423d
+_commit=075dbe9f6e3c21596c5245826a4ee1f1c1676eb8
 _rc=rc0
 pkgbase=linux${_basever}
 pkgname=("$pkgbase" "$pkgbase-headers")
@@ -30,10 +30,6 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         0103_default_to_max_ASLR_bits.patch
         # Realtek patch
         0999-patch_realtek.patch
-        # IIO patches
-        0001-iio-trigger-allow-devices-to-suspend-resume-theirs-a.patch
-        0002-iio-bmi323-suspend-and-resume-triggering-on-relevant.patch
-        0003-iio-bmi323-peripheral-in-lowest-power-state-on-suspe.patch
         # ROG ALLY Patches (stable)
         0004-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
         0007-Revert-platform-x86-asus-wmi-ROG-Ally-increase-wait-.patch
@@ -54,9 +50,6 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         # Steamdeck (OLED)
         0001-steam-deck.patch
         0002-steamdeck-oled-audio.patch
-        # Temp Reverts
-        # https://forums.developer.nvidia.com/t/error-const-struct-drm-mode-config-funcs-has-no-member-named-output-poll-changed/306078
-        revert-nvidia-446d0f48.patch
 )
 
 if [[ ! -z "$_commit" ]]; then
@@ -67,15 +60,12 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('2d7951ab267c10a3f5a842c58f81e87804be13e0993e5d305cf882108f6d7e40'
-            '22c064ca18c5fc025b5a13d226569280c03931acc5dd57ed262ac1ba4a41098d'
+sha256sums=('5b0d9bc30895af9900dff73a74eab1fd6ced3d6995b6774034502c47ef16b4b4'
+            '012c90efdf8e31e108cbb4e05c1d6adb52073fd3254363a5862a022924c51555'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
-            '02d617ae99e6a6a159dfc7299308c765fb66764148c2c549d40191646c5e2dd4'
-            '65b7b008b392693974a319a8a1ab5c1a3492474faf3cb7c45d94a1f4811e0820'
-            'd99d7db369b7c4f31b21002914ba1135ecf344b3fb30a01be7d444ead43dd9f9'
             '22a21ad2cab7e2fd49c05af52542a42258bec7d561a91e69cfae2c874c682d20'
             'a6ba3818901e241d205a78d75a1bb3567c553c691ccb4c0c57a8755c7c4b92cf'
             'd3034c7257e0a5ef1e0874e08f71c3f95ee06c430251f9f200e7e45b8a915190'
@@ -92,8 +82,7 @@ sha256sums=('2d7951ab267c10a3f5a842c58f81e87804be13e0993e5d305cf882108f6d7e40'
             'ad20f75ed6add3490918b408b9e18a905dfe8425c3853c573653f8f6d3b82ee0'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
-            '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88'
-            'ed8cb385081fedb9d3aa8ce89400ddf7008897adfaba3ec0a3f529ee88da91b7')
+            '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
 
 prepare() {
   cd "$_srcdir"
