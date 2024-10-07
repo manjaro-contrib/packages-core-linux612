@@ -1,0 +1,317 @@
+From b271bdc408363b4e3af9e80b3a5c17635a95cd4f Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Wed, 2 Oct 2024 23:51:36 +1300
+Subject: [PATCH 23/25] hid-asus-ally: initial gamepad configuration
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-asus-ally.c | 120 +++++++++++++++++++++++++++++++-----
+ drivers/hid/hid-asus-ally.h |  99 +++++++++++++++++++++++------
+ 2 files changed, 186 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
+index 33d9ac0c6bd5..77d402986f1c 100644
+--- a/drivers/hid/hid-asus-ally.c
++++ b/drivers/hid/hid-asus-ally.c
+@@ -49,6 +49,17 @@ static const struct hid_device_id rog_ally_devices[] = {
+ 	{}
+ };
+ 
++/* ROG Ally has many settings related to the gamepad, all using the same n-key endpoint */
++struct ally_gamepad_cfg {
++	struct hid_device *hdev;
++	struct input_dev *input;
++
++	/*
++	 * index: [mode][phys pair][b1, b1 secondary, b2, b2 secondary, blocks of 11]
++	 */
++	u8 key_mapping[xpad_mode_mouse][btn_pair_lt_rt][MAPPING_BLOCK_LEN];
++};
++
+ /* The hatswitch outputs integers, we use them to index this X|Y pair */
+ static const int hat_values[][2] = {
+ 	{ 0, 0 }, { 0, -1 }, { 1, -1 }, { 1, 0 },   { 1, 1 },
+@@ -119,6 +130,7 @@ struct ally_rgb_data {
+ static struct ally_drvdata {
+ 	struct hid_device *hdev;
+ 	struct ally_x_device *ally_x;
++	struct ally_gamepad_cfg *gamepad_cfg;
+ 	struct ally_rgb_dev *led_rgb_dev;
+ 	struct ally_rgb_data led_rgb_data;
+ } drvdata;
+@@ -173,6 +185,77 @@ static u8 get_endpoint_address(struct hid_device *hdev)
+ 	return -ENODEV;
+ }
+ 
++/**************************************************************************************************/
++/* ROG Ally gamepad configuration                                                                 */
++/**************************************************************************************************/
++
++static void __gamepad_mapping_xpad_default(struct ally_gamepad_cfg *ally_cfg)
++{
++	memcpy(&ally_cfg->key_mapping[0][0], &XPAD_DEF1, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][1], &XPAD_DEF2, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][2], &XPAD_DEF3, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][3], &XPAD_DEF4, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][4], &XPAD_DEF5, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][5], &XPAD_DEF6, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][6], &XPAD_DEF7, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][7], &XPAD_DEF8, MAPPING_BLOCK_LEN);
++	memcpy(&ally_cfg->key_mapping[0][8], &XPAD_DEF9, MAPPING_BLOCK_LEN);
++}
++
++static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
++{
++	struct ally_gamepad_cfg *ally_cfg;
++	struct input_dev *input_dev;
++	int err;
++
++	ally_cfg = devm_kzalloc(&hdev->dev, sizeof(*ally_cfg), GFP_KERNEL);
++	if (!ally_cfg)
++		return ERR_PTR(-ENOMEM);
++	ally_cfg->hdev = hdev;
++
++	input_dev = devm_input_allocate_device(&hdev->dev);
++	if (!input_dev) {
++		err = -ENOMEM;
++		goto free_ally_cfg;
++	}
++	ally_cfg->input = input_dev;
++
++	input_dev->id.bustype = hdev->bus;
++	input_dev->id.vendor = hdev->vendor;
++	input_dev->id.product = hdev->product;
++	input_dev->id.version = hdev->version;
++	input_dev->uniq = hdev->uniq;
++	input_dev->name = "ASUS ROG Ally Config";
++	input_set_capability(input_dev, EV_KEY, KEY_PROG1);
++	input_set_capability(input_dev, EV_KEY, KEY_F16);
++	input_set_capability(input_dev, EV_KEY, KEY_F17);
++	input_set_capability(input_dev, EV_KEY, KEY_F18);
++
++	input_set_drvdata(input_dev, hdev);
++
++	err = input_register_device(input_dev);
++	if (err)
++		goto free_input_dev;
++
++	/* ignore all errors for this as they are related to USB HID I/O */
++	__gamepad_mapping_xpad_default(ally_cfg);
++
++	return ally_cfg;
++
++free_input_dev:
++	devm_kfree(&hdev->dev, input_dev);
++
++free_ally_cfg:
++	devm_kfree(&hdev->dev, ally_cfg);
++	return ERR_PTR(err);
++}
++
++static void ally_cfg_remove(struct hid_device *hdev)
++{
++	// __gamepad_set_mode(hdev, drvdata.gamepad_cfg, xpad_mode_mouse);
++	// sysfs_remove_groups(&hdev->dev.kobj, gamepad_device_attr_groups);
++}
++
+ /**************************************************************************************************/
+ /* ROG Ally gamepad i/o and force-feedback                                                        */
+ /**************************************************************************************************/
+@@ -729,7 +812,7 @@ static void ally_rgb_remove(struct hid_device *hdev)
+ static int ally_raw_event(struct hid_device *hdev, struct hid_report *report, u8 *data,
+ 			  int size)
+ {
+-	// struct ally_gamepad_cfg *cfg = drvdata.gamepad_cfg;
++	struct ally_gamepad_cfg *cfg = drvdata.gamepad_cfg;
+ 	struct ally_x_device *ally_x = drvdata.ally_x;
+ 
+ 	if (ally_x) {
+@@ -741,13 +824,13 @@ static int ally_raw_event(struct hid_device *hdev, struct hid_report *report, u8
+ 			return -1;
+ 		}
+ 	}
+-	// if (cfg && !ally_x) {
+-	// 	input_report_key(cfg->input, KEY_PROG1, data[1] == 0x38);
+-	// 	input_report_key(cfg->input, KEY_F16, data[1] == 0xA6);
+-	// 	input_report_key(cfg->input, KEY_F17, data[1] == 0xA7);
+-	// 	input_report_key(cfg->input, KEY_F18, data[1] == 0xA8);
+-	// 	input_sync(cfg->input);
+-	// }
++	if (cfg && !ally_x) {
++		input_report_key(cfg->input, KEY_PROG1, data[1] == 0x38);
++		input_report_key(cfg->input, KEY_F16, data[1] == 0xA6);
++		input_report_key(cfg->input, KEY_F17, data[1] == 0xA7);
++		input_report_key(cfg->input, KEY_F18, data[1] == 0xA8);
++		input_sync(cfg->input);
++	}
+ 
+ 	return 0;
+ }
+@@ -866,7 +949,7 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+ 	if (ep < 0)
+ 		return ep;
+ 
+-	if (ep != ALLY_CFG_INTF_IN_ADDRESS ||
++	if (ep != ALLY_CFG_INTF_IN_ADDRESS &&
+ 	    ep != ALLY_X_INTERFACE_ADDRESS)
+ 		return -ENODEV;
+ 
+@@ -906,7 +989,13 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+ 		else
+ 			hid_info(hdev, "Created Ally RGB LED controls.\n");
+ 
+-		if (IS_ERR(drvdata.led_rgb_dev))
++		drvdata.gamepad_cfg = ally_gamepad_cfg_create(hdev);
++		if (IS_ERR(drvdata.gamepad_cfg))
++			hid_err(hdev, "Failed to create Ally gamepad attributes.\n");
++		else
++			hid_info(hdev, "Created Ally gamepad attributes.\n");
++
++		if (IS_ERR(drvdata.led_rgb_dev) && IS_ERR(drvdata.gamepad_cfg))
+ 			goto err_close;
+ 	}
+ 
+@@ -921,10 +1010,10 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+ 		hid_info(hdev, "Created Ally X controller.\n");
+ 
+ 		// Not required since we send this inputs ep through the gamepad input dev
+-		// if (drvdata.gamepad_cfg && drvdata.gamepad_cfg->input) {
+-		// 	input_unregister_device(drvdata.gamepad_cfg->input);
+-		// 	hid_info(hdev, "Ally X removed unrequired input dev.\n");
+-		// }
++		if (drvdata.gamepad_cfg && drvdata.gamepad_cfg->input) {
++			input_unregister_device(drvdata.gamepad_cfg->input);
++			hid_info(hdev, "Ally X removed unrequired input dev.\n");
++		}
+ 	}
+ 
+ 	return 0;
+@@ -944,6 +1033,9 @@ static void ally_hid_remove(struct hid_device *hdev)
+ 	if (drvdata.ally_x)
+ 		ally_x_remove(hdev);
+ 
++	if (drvdata.gamepad_cfg)
++		ally_cfg_remove(hdev);
++
+ 	hid_hw_close(hdev);
+ 	hid_hw_stop(hdev);
+ }
+diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
+index 458d02996bca..985f0f7ac608 100644
+--- a/drivers/hid/hid-asus-ally.h
++++ b/drivers/hid/hid-asus-ally.h
+@@ -10,31 +10,92 @@
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd {
+-	xpad_cmd_set_mode = 0x01,
+ 	xpad_cmd_set_mapping = 0x02,
+-	xpad_cmd_set_js_dz = 0x04, /* deadzones */
+-	xpad_cmd_set_tr_dz = 0x05, /* deadzones */
+-	xpad_cmd_set_vibe_intensity = 0x06,
+-	xpad_cmd_set_leds = 0x08,
+-	xpad_cmd_check_ready = 0x0A,
+-	xpad_cmd_set_calibration = 0x0D,
+-	xpad_cmd_set_turbo = 0x0F,
+-	xpad_cmd_set_response_curve = 0x13,
+-	xpad_cmd_set_adz = 0x18,
+ };
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd_len {
+-	xpad_cmd_len_mode = 0x01,
+ 	xpad_cmd_len_mapping = 0x2c,
+-	xpad_cmd_len_deadzone = 0x04,
+-	xpad_cmd_len_vibe_intensity = 0x02,
+-	xpad_cmd_len_leds = 0x0C,
+-	xpad_cmd_len_calibration2 = 0x01,
+-	xpad_cmd_len_calibration3 = 0x01,
+-	xpad_cmd_len_turbo = 0x20,
+-	xpad_cmd_len_response_curve = 0x09,
+-	xpad_cmd_len_adz = 0x02,
++};
++
++enum btn_pair_index {
++	btn_pair_dpad_u_d = 0x01,
++	btn_pair_dpad_l_r = 0x02,
++	btn_pair_ls_rs = 0x03,
++	btn_pair_lb_rb = 0x04,
++	btn_pair_a_b = 0x05,
++	btn_pair_x_y = 0x06,
++	btn_pair_view_menu = 0x07,
++	btn_pair_m1_m2 = 0x08,
++	btn_pair_lt_rt = 0x09,
++};
++
++/*
++ * the xpad_mode is used inside the mode setting packet and is used
++ * for indexing (xpad_mode - 1)
++ */
++enum xpad_mode {
++	xpad_mode_game = 0x01,
++	xpad_mode_wasd = 0x02,
++	xpad_mode_mouse = 0x03,
++};
++
++#define MAPPING_BLOCK_LEN 44
++
++/* Default blocks for the xpad mode */
++static const u8 XPAD_DEF1[MAPPING_BLOCK_LEN] = {
++	0x01, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x05, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x04, 0x00, 0x00, 0x00, 0x00, 0x03, 0x8c, 0x88, 0x76, 0x00, 0x00
++};
++static const u8 XPAD_DEF2[MAPPING_BLOCK_LEN] = {
++	0x01, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x82, 0x23, 0x00, 0x00, 0x00,
++	0x01, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x82, 0x0d, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF3[MAPPING_BLOCK_LEN] = {
++	0x01, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF4[MAPPING_BLOCK_LEN] = {
++	0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF5[MAPPING_BLOCK_LEN] = {
++	0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x05, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x82, 0x31, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF6[MAPPING_BLOCK_LEN] = {
++	0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x82, 0x4d, 0x00, 0x00, 0x00,
++	0x01, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x05, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF7[MAPPING_BLOCK_LEN] = {
++	0x01, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF8[MAPPING_BLOCK_LEN] = {
++	0x02, 0x00, 0x8e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x02, 0x00, 0x8e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x02, 0x00, 0x8f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x02, 0x00, 0x8f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++static const u8 XPAD_DEF9[MAPPING_BLOCK_LEN] = {
++	0x01, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x01, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+ };
+ 
+ /* required so we can have nested attributes with same name but different functions */
+-- 
+2.46.2
+

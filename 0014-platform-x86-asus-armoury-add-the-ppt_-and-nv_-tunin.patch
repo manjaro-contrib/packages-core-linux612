@@ -1,25 +1,26 @@
-From 43286f357d98b32a1dba96bbfde600df6e9f51a5 Mon Sep 17 00:00:00 2001
+From 54cb028ccf0a195ca6cb6a62ec05c7e1c8499370 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
-Subject: [PATCH 14/21] platform/x86: asus-armoury: add the ppt_* and nv_*
+Subject: [PATCH 14/25] platform/x86: asus-armoury: add the ppt_* and nv_*
  tuning knobs
 
 Adds the ppt_* and nv_* tuning knobs that are available via WMI methods
 and adds proper min/max levels plus defaults.
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
- drivers/platform/x86/asus-armoury.c | 130 ++++++++++++++++++++++++++++
+ drivers/platform/x86/asus-armoury.c | 134 ++++++++++++++++++++++++++++
  drivers/platform/x86/asus-armoury.h |  65 ++++++++++++++
- 2 files changed, 195 insertions(+)
+ 2 files changed, 199 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 15eab4d45b81..766f944d0233 100644
+index a4a615dc919b..192c60bb1091 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -52,12 +52,40 @@
- #define NVIDIA_TEMP_MIN 75
- #define NVIDIA_TEMP_MAX 87
+ #define PPT_PLATFORM_MAX 100
+ #define PPT_PLATFORM_DEFAULT 80
  
 +/* Tunables provided by ASUS for gaming laptops */
 +struct rog_tunables {
@@ -58,7 +59,7 @@ index 15eab4d45b81..766f944d0233 100644
  	u32 mini_led_dev_id;
  	u32 gpu_mux_dev_id;
  
-@@ -421,6 +449,25 @@ WMI_SHOW_INT(egpu_enable_current_value, "%d\n", ASUS_WMI_DEVID_EGPU);
+@@ -431,6 +459,25 @@ WMI_SHOW_INT(egpu_enable_current_value, "%d\n", ASUS_WMI_DEVID_EGPU);
  ATTR_GROUP_BOOL_CUSTOM(egpu_enable, "egpu_enable", "Enable the eGPU (also disables dGPU)");
  
  /* Simple attribute creation */
@@ -84,7 +85,7 @@ index 15eab4d45b81..766f944d0233 100644
  ATTR_GROUP_ENUM_INT_RO(charge_mode, "charge_mode", ASUS_WMI_DEVID_CHARGE_MODE, "0;1;2",
  		       "Show the current mode of charging");
  
-@@ -441,6 +488,14 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -451,6 +498,14 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &egpu_enable_attr_group, ASUS_WMI_DEVID_EGPU },
  	{ &dgpu_disable_attr_group, ASUS_WMI_DEVID_DGPU },
  
@@ -99,23 +100,25 @@ index 15eab4d45b81..766f944d0233 100644
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
  	{ &mcu_powersave_attr_group, ASUS_WMI_DEVID_MCU_POWERSAVE },
-@@ -532,12 +587,87 @@ static int asus_fw_attr_add(void)
+@@ -552,6 +607,79 @@ static int asus_fw_attr_add(void)
  
  /* Init / exit ****************************************************************/
  
 +/* Set up the min/max and defaults for ROG tunables */
 +static void init_rog_tunables(struct rog_tunables *rog)
 +{
-+	const char *product;
-+	u32 max_boost = NVIDIA_BOOST_MAX;
-+	u32 cpu_default = PPT_CPU_LIMIT_DEFAULT;
-+	u32 cpu_max = PPT_CPU_LIMIT_MAX;
 +	u32 platform_default = PPT_PLATFORM_DEFAULT;
++	u32 cpu_default = PPT_CPU_LIMIT_DEFAULT;
 +	u32 platform_max = PPT_PLATFORM_MAX;
++	u32 max_boost = NVIDIA_BOOST_MAX;
++	u32 cpu_max = PPT_CPU_LIMIT_MAX;
++	const char *product;
 +
 +	/*
 +	 * ASUS product_name contains everything required, e.g,
-+	 * "ROG Flow X16 GV601VV_GV601VV_00185149B"
++	 * "ROG Flow X16 GV601VV_GV601VV_00185149B".
++	 * The bulk of these defaults are gained from users reporting what
++	 * ASUS Armoury Crate in Windows provides them.
 +	 */
 +	product = dmi_get_system_info(DMI_PRODUCT_NAME);
 +
@@ -136,6 +139,8 @@ index 15eab4d45b81..766f944d0233 100644
 +		   strstr(product, "FA507N") || strstr(product, "FA507X") ||
 +		   strstr(product, "FA707N") || strstr(product, "FA707X")) {
 +		cpu_max = 90;
++	} else {
++		pr_notice("Using default CPU limits. Please report if these are not correct.\n");
 +	}
 +
 +	if (strstr(product, "GZ301ZE"))
@@ -174,9 +179,10 @@ index 15eab4d45b81..766f944d0233 100644
 +
  static int __init asus_fw_init(void)
  {
- 	int err;
- 
- 	fw_attrs.pending_reboot = false;
+ 	char *wmi_uid;
+@@ -568,6 +696,12 @@ static int __init asus_fw_init(void)
+ 	if (!strcmp(wmi_uid, ASUS_ACPI_UID_ASUSWMI))
+ 		return -ENODEV;
  
 +	asus_armoury.rog_tunables = kzalloc(sizeof(struct rog_tunables), GFP_KERNEL);
 +	if (!asus_armoury.rog_tunables)
@@ -188,7 +194,7 @@ index 15eab4d45b81..766f944d0233 100644
  	if (err)
  		return err;
 diff --git a/drivers/platform/x86/asus-armoury.h b/drivers/platform/x86/asus-armoury.h
-index b99fd136abf1..9e63ea0d9d44 100644
+index 4d0dd34c52aa..ca570ed9c8ef 100644
 --- a/drivers/platform/x86/asus-armoury.h
 +++ b/drivers/platform/x86/asus-armoury.h
 @@ -17,6 +17,12 @@ static ssize_t attr_int_store(struct kobject *kobj, struct kobj_attribute *attr,

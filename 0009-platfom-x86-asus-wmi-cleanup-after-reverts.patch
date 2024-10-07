@@ -1,7 +1,7 @@
 From a28a33dfdc3f814ebfa8d9c43bae0ffc3ec5357e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 24 Sep 2024 19:38:15 +1200
-Subject: [PATCH 09/21] platfom/x86: asus-wmi: cleanup after reverts
+Subject: [PATCH 09/25] platfom/x86: asus-wmi: cleanup after reverts
 
 Cleanup some leftover code after reverting:
 - 7e7a5dee49732ed01a3a17c9a3edf027fb9457fe

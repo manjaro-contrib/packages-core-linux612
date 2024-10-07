@@ -1,7 +1,7 @@
-From 34761face2a252c7119bf02e30032468cc4e8be1 Mon Sep 17 00:00:00 2001
+From 5238f6b7043d8c3d1afd61b7bee980424e3cbc68 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:40:46 +1200
-Subject: [PATCH 10/21] platform/x86: asus-wmi: export symbols used for
+Subject: [PATCH 10/25] platform/x86: asus-wmi: export symbols used for
  read/write WMI
 
 Export some rather helpful read/write WMI symbols using a namespace.
@@ -10,6 +10,7 @@ These are DEVS and DSTS only, or require the arg0 input.
 Also does a slight refactor of internals of these functions.
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
  drivers/platform/x86/asus-wmi.c            | 51 ++++++++++++++++++++--
  include/linux/platform_data/x86/asus-wmi.h | 10 +++++

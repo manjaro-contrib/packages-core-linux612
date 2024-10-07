@@ -1,7 +1,7 @@
 From 07de32121b9afa5863e930f3c6ce290affd48fdc Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 24 Sep 2024 19:35:15 +1200
-Subject: [PATCH 08/21] Revert "platform/x86: asus-wmi: disable USB0 hub on ROG
+Subject: [PATCH 08/25] Revert "platform/x86: asus-wmi: disable USB0 hub on ROG
  Ally before suspend"
 
 This reverts commit e0894ff038d86f30614ec16ec26dacb88c8d2bd4.

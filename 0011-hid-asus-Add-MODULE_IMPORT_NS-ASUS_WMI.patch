@@ -1,7 +1,7 @@
-From feda6b50627d09b40d2c189d18307365bfb31e68 Mon Sep 17 00:00:00 2001
+From f8b93e0b4fcfef376f2b0e5dbb5f603586818974 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 21 Sep 2024 16:04:58 +1200
-Subject: [PATCH 11/21] hid-asus: Add MODULE_IMPORT_NS(ASUS_WMI)
+Subject: [PATCH 11/25] hid-asus: Add MODULE_IMPORT_NS(ASUS_WMI)
 
 A small change to asus_wmi_evaluate_method() was introduced during
 asus-armoury driver development to put the exports behind a namespace.
@@ -9,6 +9,7 @@ asus-armoury driver development to put the exports behind a namespace.
 Import that namespace here.
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
+Acked-by: Jiri Kosina <jkosina@suse.com>
 ---
  drivers/hid/hid-asus.c | 1 +
  1 file changed, 1 insertion(+)

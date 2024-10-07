@@ -1,7 +1,7 @@
 From 431dd3fe36596d71113c70aaf9287a51eebd0d08 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 7 Jun 2024 15:58:01 +1200
-Subject: [PATCH 04/21] Input: xpad - add support for ASUS ROG RAIKIRI PRO
+Subject: [PATCH 04/25] Input: xpad - add support for ASUS ROG RAIKIRI PRO
 
 Add the VID/PID for ASUS ROG RAIKIRI PRO to
 xpad_device and the VID to xpad_table.

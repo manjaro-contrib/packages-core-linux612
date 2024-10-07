@@ -1,7 +1,7 @@
 From 52b58670012d87c782682f706c760e6fe688a75f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 24 Sep 2024 19:30:34 +1200
-Subject: [PATCH 07/21] Revert "platform/x86: asus-wmi: ROG Ally increase wait
+Subject: [PATCH 07/25] Revert "platform/x86: asus-wmi: ROG Ally increase wait
  time, allow MCU powersave"
 
 This reverts commit 7e7a5dee49732ed01a3a17c9a3edf027fb9457fe.
