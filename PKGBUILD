@@ -12,7 +12,7 @@ _rc=rc2
 pkgbase=linux${_basever}
 pkgname=("$pkgbase" "$pkgbase-headers")
 pkgver=6.12.0rc2
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=('GPL2')
@@ -54,8 +54,14 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         0021-hid-asus-ally-Add-joystick-LED-ring-support.patch
         0022-hid-asus-ally-initial-Ally-X-gamepad.patch
         0023-hid-asus-ally-initial-gamepad-configuration.patch
-        0024-Initial-gamepad-key-mapping-pre-refactor.patch
-        0025-First-pass-refactor.patch
+        0024-hid-asus-ally-add-button-remap-attributes.patch
+        0025-hid-asus-ally-Turbo-settings-for-buttons.patch
+        0026-hid-asus-ally-add-gamepad-modes-and-defaults.patch
+        0027-hid-asus-ally-add-vibration-intensity-settings.patch
+        0028-hid-asus-ally-add-JS-deadzones.patch
+        0029-hid-asus-ally-add-trigger-deadzones.patch
+        0030-hid-asus-ally-add-anti-deadzones.patch
+        0031-hid-asus-ally-add-JS-response-curves.patch
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Steamdeck (OLED)
@@ -90,11 +96,17 @@ sha256sums=('36efbb865ead39771f63ecad7a26adf3dc7de93e27932e59dda81a0bda556b91'
             '613d2f20e6dabf4eb44080013f591f57621cf2e15aeef04f1c008231e5475268'
             'edd01df4c26a9660e487225a4830897f955cd145f62e536a4958621b2b197333'
             '55f9ab848d43f98cee82aefc0113fd898613fa6d6db92da62162b407fb8fcc9f'
-            '299715687865262c27208360fe7fb99e41c42f02e212ecd2518dd669d7227b77'
-            'dc0c20aeae0f7f2f55cd197a60dcd5d1f3ad552cf56438423a0903ec3a18b6b7'
-            '947b275256b64eab81f9d58c33ff0a955b45dc0fbd79d7bca0ea28b5b70ee0aa'
-            '3c9ad2bbcc3d63e4eb4e0061648bab10cf9b2fcc82f122949700aa24fb44f996'
-            '9495d00b330c7e1fb320a13c438dc032c7140e6c1408181b3bc858d71f47a7c7'
+            '5d5e68bab741b7692ce117f8f4fc869927ff61929f23a49923285831ad887400'
+            '6051c43ba9195b7aedadb180e4bf7aa1d24259742d69c060cb6f57e9e9e0be1b'
+            'eb396b9a3b5251a2101ff78039d128e2155d9b4bd5a907c8c8d8ec1d685730f5'
+            '66b3536134aea922f458de50bdb2182b6f179dd6ff6668af8191a936220553dd'
+            '5b3cd6758cac6bcebcf908bfbcfbe23de375ff3a1c214ebe4441e9f496d40fd1'
+            '0b388449235cb18eb080719d13ddc4bef5308c7aa127c149fc919491df23ff33'
+            'af9657d5f9c136f08e8c5e8c95a4c3d8872dbce23d4c4a31049a9beeaa369552'
+            'dcb2732dc891e78d4f1dc889d4c4045368380d40dc1bca34e996adfd45ce6dae'
+            '6a0423752d2578de78691bf995ced5ff84220328ee961aae38900067ccc177f1'
+            '5dffc3f2cf681d9a27b40bec4361533d01ead6beca3eb33153dd434c5fca8d43'
+            '0fff5fb87b42be67af6592465c8284954332baab728ce9c1326dc712e219ef86'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')

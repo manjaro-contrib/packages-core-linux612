@@ -1,0 +1,33 @@
+From 593c51fe775dd5039e5cfeb0a26f08d3e1589498 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Sat, 5 Oct 2024 19:08:40 +1300
+Subject: [PATCH 26/31] hid-asus-ally: add gamepad modes and defaults
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-asus-ally.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
+index 5b48f75b1075..6761afe847d8 100644
+--- a/drivers/hid/hid-asus-ally.h
++++ b/drivers/hid/hid-asus-ally.h
+@@ -20,6 +20,7 @@ enum xpad_mode {
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd {
++	xpad_cmd_set_mode = 0x01,
+ 	xpad_cmd_set_mapping = 0x02,
+ 	xpad_cmd_set_leds = 0x08,
+ 	xpad_cmd_check_ready = 0x0A,
+@@ -28,6 +29,7 @@ enum xpad_cmd {
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd_len {
++	xpad_cmd_len_mode = 0x01,
+ 	xpad_cmd_len_mapping = 0x2c,
+ 	xpad_cmd_len_leds = 0x0C,
+ 	xpad_cmd_len_turbo = 0x20,
+-- 
+2.46.2
+
