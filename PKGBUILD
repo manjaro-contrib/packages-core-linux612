@@ -207,6 +207,7 @@ package_linux612-headers() {
   echo "${_kernver}" |
     install -Dm644 /dev/stdin "${_builddir}/version"
 
+  install -Dt "${_builddir}" -m644 System.map localversion.* tools/bpf/bpftool/vmlinux.h
   install -Dt "${_builddir}" -m644 Makefile .config Module.symvers
   install -Dt "${_builddir}/kernel" -m644 kernel/Makefile
   install -Dt "${_builddir}" -m644 vmlinux
@@ -214,6 +215,7 @@ package_linux612-headers() {
   mkdir "${_builddir}/.tmp_versions"
 
   cp -t "${_builddir}" -a include scripts
+  ln -srt "$builddir" "$builddir/scripts/gdb/vmlinux-gdb.py"
 
   install -Dt "${_builddir}/arch/x86" -m644 "arch/x86/Makefile"
   install -Dt "${_builddir}/arch/x86/kernel" -m644 "arch/x86/kernel/asm-offsets.s"
