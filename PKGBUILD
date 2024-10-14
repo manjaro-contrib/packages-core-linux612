@@ -199,6 +199,7 @@ _package() {
   echo "${_basekernel}-${CARCH}" | install -Dm644 /dev/stdin "$modulesdir/kernelbase"
 
   # add kernel version
+  mkdir -p "${pkgdir}/boot"
   echo "${pkgver}-${pkgrel}-MANJARO x64" > "${pkgdir}/boot/${pkgbase}-${CARCH}.kver"
 
   echo "Installing modules..."
