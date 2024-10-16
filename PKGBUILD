@@ -11,7 +11,7 @@ _commit=
 _rc=rc3
 pkgbase=linux${_basever}
 pkgver=6.12.0rc3
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -90,7 +90,7 @@ else
 fi
 
 sha256sums=('c9b271cc559588796a80f06f4198a4de2823bc28cb5cd2632f3b80401035b91d'
-            '45754752e7bfd0ad3b230a88df04dea58afb1c700d9d3933849d893e65fb3101'
+            'b87e3fbd3ae73f6b51981cea30505ef4c9c33d24bc6995244f12d8cab1d8f5bd'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
@@ -160,7 +160,7 @@ prepare() {
 
 build() {
   cd $_srcdir
-  make all
+  make ${MAKEFLAGS} bzImage modules
   make -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
 }
 
@@ -208,6 +208,9 @@ _package() {
 
   # remove build link
   rm "$modulesdir"/build
+
+  # now we call depmod...
+  depmod -b "${pkgdir}/usr" -F System.map "$(<version)"
 }
 
 _package-headers() {
