@@ -11,7 +11,7 @@ _commit=
 _rc=rc3
 pkgbase=linux${_basever}
 pkgver=6.12.0rc3
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -200,7 +200,7 @@ _package() {
 
   # add kernel version
   mkdir -p "${pkgdir}/boot"
-  echo "${pkgver}-${pkgrel}-MANJARO x64" > "${pkgdir}/boot/${pkgbase}-${CARCH}.kver"
+  echo "$(<version) x64" > "${pkgdir}/boot/${pkgbase}-${CARCH}.kver"
 
   echo "Installing modules..."
   ZSTD_CLEVEL=19 make INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1 \
