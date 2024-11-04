@@ -1,7 +1,7 @@
-From a70a366f9b05c5ed131c52bc14e8a423496ea8a1 Mon Sep 17 00:00:00 2001
+From 0929c50bd4e1fd7208fc39c8bcc1d4d67333fb03 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 14:58:33 +1300
-Subject: [PATCH 24/31] hid-asus-ally: add button remap attributes
+Subject: [PATCH 27/35] hid-asus-ally: add button remap attributes
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -673,5 +673,5 @@ index 9c22e62ff0c6..910a3997fc68 100644
 +	ALLY_DEVICE_ATTR_RW(btn_mapping_##_fname##_macro, macro_remap); \
 +	ALLY_BTN_ATTRS_GROUP(btn_##_fname, btn_mapping_##_fname)
 -- 
-2.46.2
+2.47.0
 

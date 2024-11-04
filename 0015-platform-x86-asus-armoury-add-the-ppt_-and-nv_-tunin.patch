@@ -1,7 +1,7 @@
-From 54cb028ccf0a195ca6cb6a62ec05c7e1c8499370 Mon Sep 17 00:00:00 2001
+From a5eca9b0e07a73d6fba3875c70a347d5b98ec854 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
-Subject: [PATCH 14/25] platform/x86: asus-armoury: add the ppt_* and nv_*
+Subject: [PATCH 15/35] platform/x86: asus-armoury: add the ppt_* and nv_*
  tuning knobs
 
 Adds the ppt_* and nv_* tuning knobs that are available via WMI methods
@@ -275,5 +275,5 @@ index 4d0dd34c52aa..ca570ed9c8ef 100644
 +
  #endif /* _ASUS_BIOSCFG_H_ */
 -- 
-2.46.2
+2.47.0
 

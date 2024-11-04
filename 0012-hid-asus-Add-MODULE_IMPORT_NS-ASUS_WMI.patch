@@ -1,7 +1,7 @@
-From f8b93e0b4fcfef376f2b0e5dbb5f603586818974 Mon Sep 17 00:00:00 2001
+From 7985bb428016c0a097fc72b8e9d686525dc193ff Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 21 Sep 2024 16:04:58 +1200
-Subject: [PATCH 11/25] hid-asus: Add MODULE_IMPORT_NS(ASUS_WMI)
+Subject: [PATCH 12/35] hid-asus: Add MODULE_IMPORT_NS(ASUS_WMI)
 
 A small change to asus_wmi_evaluate_method() was introduced during
 asus-armoury driver development to put the exports behind a namespace.
@@ -25,5 +25,5 @@ index 659cf9c96e26..07bbe3cc48a9 100644
 +MODULE_IMPORT_NS(ASUS_WMI);
  MODULE_LICENSE("GPL");
 -- 
-2.46.2
+2.47.0
 

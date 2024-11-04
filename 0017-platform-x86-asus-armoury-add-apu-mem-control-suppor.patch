@@ -1,7 +1,7 @@
-From 301b867f241c76d3b02d91a82e2f4121d2aad8ad Mon Sep 17 00:00:00 2001
+From 4a25c603b0c961aaf2f18a9e2929e6f89338955f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
-Subject: [PATCH 16/25] platform/x86: asus-armoury: add apu-mem control support
+Subject: [PATCH 17/35] platform/x86: asus-armoury: add apu-mem control support
 
 Implement the APU memory size control under the asus-armoury module using
 the fw_attributes class.
@@ -161,5 +161,5 @@ index 8c755799eb60..88bf250dc8ca 100644
  /* gpu mux switch, 0 = dGPU, 1 = Optimus */
  #define ASUS_WMI_DEVID_GPU_MUX		0x00090016
 -- 
-2.46.2
+2.47.0
 

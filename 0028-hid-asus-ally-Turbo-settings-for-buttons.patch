@@ -1,7 +1,7 @@
-From fe3c8b7b78a9202b0247ac0fb900eb06beb26131 Mon Sep 17 00:00:00 2001
+From bcc9bc2822477cde66b799669ef1956abf1a03d1 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
-Subject: [PATCH 25/31] hid-asus-ally: Turbo settings for buttons
+Subject: [PATCH 28/35] hid-asus-ally: Turbo settings for buttons
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -214,5 +214,5 @@ index 910a3997fc68..5b48f75b1075 100644
 +	ALLY_DEVICE_ATTR_RW(btn_mapping_##_fname##_turbo, turbo);          \
 +	ALLY_BTN_ATTRS_GROUP_WITH_TURBO(btn_##_fname, btn_mapping_##_fname)
 -- 
-2.46.2
+2.47.0
 

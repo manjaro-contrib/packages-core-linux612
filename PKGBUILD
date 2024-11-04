@@ -42,38 +42,43 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         0103_default_to_max_ASLR_bits.patch
         # Realtek patch
         0999-patch_realtek.patch
-        # ROG ALLY Patches (stable)
+        # ROG ALLY Patches (work-branch)
         #0001-Fix-ROG-ALLY-X-audio.patch
         #0002-platform-x86-asus-wmi-add-support-for-vivobook-fan-p.patch
         #0003-hid-asus-use-hid-for-brightness-control-on-keyboard.patch
         0004-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
         #0005-platform-x86-asus-wmi-add-debug-print-in-more-key-pl.patch
         #0006-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
-        0007-Revert-platform-x86-asus-wmi-ROG-Ally-increase-wait-.patch
-        0008-Revert-platform-x86-asus-wmi-disable-USB0-hub-on-ROG.patch
-        0009-platfom-x86-asus-wmi-cleanup-after-reverts.patch
-        0010-platform-x86-asus-wmi-export-symbols-used-for-read-w.patch
-        0011-hid-asus-Add-MODULE_IMPORT_NS-ASUS_WMI.patch
-        0012-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
-        0013-platform-x86-asus-armoury-add-panel_hd_mode-attribut.patch
-        0014-platform-x86-asus-armoury-add-the-ppt_-and-nv_-tunin.patch
-        0015-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
-        0016-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
-        0017-platform-x86-asus-armoury-add-core-count-control.patch
-        0018-platform-x86-asus-wmi-deprecate-bios-features.patch
-        #0019-ACPI-PM-Quirk-ASUS-ROG-M16-to-default-to-S3-sleep.patch
-        #0020-ACPI-CPPC-Add-support-for-setting-EPP-register-in-FF.patch
-        0021-hid-asus-ally-Add-joystick-LED-ring-support.patch
-        0022-hid-asus-ally-initial-Ally-X-gamepad.patch
-        0023-hid-asus-ally-initial-gamepad-configuration.patch
-        0024-hid-asus-ally-add-button-remap-attributes.patch
-        0025-hid-asus-ally-Turbo-settings-for-buttons.patch
-        0026-hid-asus-ally-add-gamepad-modes-and-defaults.patch
-        0027-hid-asus-ally-add-vibration-intensity-settings.patch
-        0028-hid-asus-ally-add-JS-deadzones.patch
-        0029-hid-asus-ally-add-trigger-deadzones.patch
-        0030-hid-asus-ally-add-anti-deadzones.patch
-        0031-hid-asus-ally-add-JS-response-curves.patch
+        0007-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
+        0008-drm-Notify-the-suspend-core-when-displays-are-change.patch
+        0009-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
+        0010-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
+        0011-platform-x86-asus-wmi-export-symbols-used-for-read-w.patch
+        0012-hid-asus-Add-MODULE_IMPORT_NS-ASUS_WMI.patch
+        0013-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
+        0014-platform-x86-asus-armoury-add-panel_hd_mode-attribut.patch
+        0015-platform-x86-asus-armoury-add-the-ppt_-and-nv_-tunin.patch
+        0016-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
+        0017-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
+        0018-platform-x86-asus-armoury-add-core-count-control.patch
+        0019-platform-x86-asus-wmi-deprecate-bios-features.patch
+        #0020-ACPI-PM-Quirk-ASUS-ROG-M16-to-default-to-S3-sleep.patch
+        #0021-ACPI-CPPC-Add-support-for-setting-EPP-register-in-FF.patch
+        #0022-Bluetooth-btusb-Add-2-USB-HW-IDs-for-MT7925-0xe118-e.patch
+        #0023-ALSA-hda-realtek-fixup-ASUS-GA605W.patch
+        0024-hid-asus-ally-Add-joystick-LED-ring-support.patch
+        0025-hid-asus-ally-initial-Ally-X-gamepad.patch
+        0026-hid-asus-ally-initial-gamepad-configuration.patch
+        0027-hid-asus-ally-add-button-remap-attributes.patch
+        0028-hid-asus-ally-Turbo-settings-for-buttons.patch
+        0029-hid-asus-ally-add-gamepad-modes-and-defaults.patch
+        0030-hid-asus-ally-add-vibration-intensity-settings.patch
+        0031-hid-asus-ally-add-JS-deadzones.patch
+        0032-hid-asus-ally-add-trigger-deadzones.patch
+        0033-hid-asus-ally-add-anti-deadzones.patch
+        0034-hid-asus-ally-add-JS-response-curves.patch
+        0035-hid-asus-ally-add-calibrations-wip.patch
+        0036-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241104093138.4819-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Steamdeck (OLED)
@@ -95,30 +100,33 @@ sha256sums=('7932703bbf3859932f615c21de4c5ae56d99dc85525bc2361d543216cff7e4ca'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
-            '1c3df472dfee1457f40cf5ee5d72e1b5de30df6cb6f0515b177b8736244a351d'
-            'a9a8114a9c98dcc85f0b7cf59588ecc64be4f7b85cc75743c22fbbe1000bb326'
-            'cada1756b79efd67cacdf410d2f9ca30182760209e99878c2a72e488bb627073'
-            '725e005d0231495016be223405998c9d9fc320632394e3ad51e723aa5782195d'
-            '46dbaa87136178f0ed6bbc637cf33161b29847fbd60197fb2710c7e31cfe2ed5'
-            'e859bd064931121df97163ec5ff895ed78025ad6a3ed9c5fb56615f990e85499'
-            '89ea82c8f03f004b2ad63d980b6d272c2af81e2bbb7189fd76b0749e05c77c32'
-            '50de31b906969eacabd98acb44672376fffb1c20f350990e2f3432d0863f2f19'
-            '270ba87d47f88c6d4f1d6f0207667a6b7ef2430d5afd7ce69b94dac50a5407fd'
-            'd8416b8e79e1f9e37de0f1ae9bcba8ede1ce7c07a889624d90746d876853e906'
-            '613d2f20e6dabf4eb44080013f591f57621cf2e15aeef04f1c008231e5475268'
-            'edd01df4c26a9660e487225a4830897f955cd145f62e536a4958621b2b197333'
-            '55f9ab848d43f98cee82aefc0113fd898613fa6d6db92da62162b407fb8fcc9f'
-            '5d5e68bab741b7692ce117f8f4fc869927ff61929f23a49923285831ad887400'
-            '6051c43ba9195b7aedadb180e4bf7aa1d24259742d69c060cb6f57e9e9e0be1b'
-            'eb396b9a3b5251a2101ff78039d128e2155d9b4bd5a907c8c8d8ec1d685730f5'
-            '66b3536134aea922f458de50bdb2182b6f179dd6ff6668af8191a936220553dd'
-            '5b3cd6758cac6bcebcf908bfbcfbe23de375ff3a1c214ebe4441e9f496d40fd1'
-            '0b388449235cb18eb080719d13ddc4bef5308c7aa127c149fc919491df23ff33'
-            'af9657d5f9c136f08e8c5e8c95a4c3d8872dbce23d4c4a31049a9beeaa369552'
-            'dcb2732dc891e78d4f1dc889d4c4045368380d40dc1bca34e996adfd45ce6dae'
-            '6a0423752d2578de78691bf995ced5ff84220328ee961aae38900067ccc177f1'
-            '5dffc3f2cf681d9a27b40bec4361533d01ead6beca3eb33153dd434c5fca8d43'
-            '0fff5fb87b42be67af6592465c8284954332baab728ce9c1326dc712e219ef86'
+            'e06d2440897987d9bdce107dd1bed97df07e82591da2600e1771f383dea5faed'
+            'c0f23800fa79d8c268c54a10503d43482012c159376980b8ffcab85e50d36aaa'
+            '27fa260443d439e4b346ede3018ce57a6f09548b807a95ebb38fa1d446ac0601'
+            '2c644704fcf8dddef5df7368699d70a95af7567764b36997c1b4271d1d018130'
+            'd04b4c925a83d5ce760bd4cb738fed306406c9cbca37fa173aaa3f136d3fb68d'
+            '3b6e6094cc81131c57e60bc2d6f2852954cb68dbcd3c5e1304686f56c3cae96a'
+            '576e6e9ab5bf486db39ad37a9b326de76a0a611149dfcde2fb3c1fccde5475fe'
+            '6e41489b469fafa717970318abe5cc5f6c0c781f33a4180dc8af9159c6eb819d'
+            'c222e0c245f3bc0592e8de40a1cb84c26f2d94b8fa583428455b4c69f65542d9'
+            '2bc9b47a75073a6eb9128c794c4f2ea02a2fe88067993991d1c0802ce0611e4b'
+            'b31e3e48e37693f5d9a18643a8a14806cbd3d9d15d595cd822aea25d4f57a2e6'
+            '6a583d8720a36ae61a6912b580ea06e1854d75a1d3633801413feb93e7dad039'
+            'bfd7af0e37faca28ecbefbd4240a6fc821da8b029e3f2eb594b31283bc54b3e9'
+            '8ee2332f0753ff9b575c5f055d166673c2536838ea86aa2962e274d3d94b309a'
+            'c7f4babcc81a98cc90d132667a64f46b59ab51954eb19de2e5694a3510f50244'
+            'b89a90e0c536b9fe6425ebc712275c88118674dfb0d18b2f7f497cecb0d86b7d'
+            '9e7cc9855aa75c59e554d4534476f6038e43c06bf31925e84c15d3a768e9d0aa'
+            '12c84b7bed1661ed1fcb637ba65878e32ae63962145cdb2000b2357cd82f87dc'
+            'b00c956069b5d1b901d74e62cf52e4b8944b72bc5a0da8b7631bd03c9af6ad45'
+            'cca275f5fd132ebce8eaf750461e501543f4495b9930733874dfb99c3a5feaec'
+            'f544f5583a36fbae9b1f1c899b0e526a9613edd1b444eb8ff110b48d95e5dece'
+            '2fdda123372e610011ff7453c5d59f5083c50048127be26a89f73515d4f69d32'
+            'bca273a6ce4bba9db1fad5f71f95bd48a37aa345c433203db37f4372c0ea134c'
+            '6bd3eeea07f47fd2e1810426750a13426cb20ea5a505c595d41bb428ad2e3437'
+            '489ec97424261e2e4f4307e25ed9c501d88e3c3a4c23e3928cc0150acff3d520'
+            '38168d0ce594da13917cc86590bd92848a96c7e6dfb1170e06d0d53a84a04dea'
+            '7efb8ffa50bfc89aab0e1832dbc8829baad63e68aa439c03f1739fc1066a48e6'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')

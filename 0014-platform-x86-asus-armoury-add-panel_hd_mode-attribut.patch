@@ -1,7 +1,7 @@
-From ecdf77ef6106a65aa01f697fb6a5cf12df356f33 Mon Sep 17 00:00:00 2001
+From 197974e50bc5ea1012345c6c26dbe55dce74b41e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:23:35 +1200
-Subject: [PATCH 13/25] platform/x86: asus-armoury: add panel_hd_mode attribute
+Subject: [PATCH 14/35] platform/x86: asus-armoury: add panel_hd_mode attribute
 
 Add panel_hd_mode to toggle the panel mode between single and high
 definition modes.
@@ -57,5 +57,5 @@ index 21313e1eb6c9..a6064995c2cc 100644
  #define ASUS_WMI_DEVID_CAMERA		0x00060013
  #define ASUS_WMI_DEVID_LID_FLIP		0x00060062
 -- 
-2.46.2
+2.47.0
 

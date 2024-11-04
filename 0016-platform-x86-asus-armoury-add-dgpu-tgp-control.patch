@@ -1,7 +1,7 @@
-From 348d9f1ee44c26aa37f4de43d8568ba7859a60ab Mon Sep 17 00:00:00 2001
+From 4294ca9d19ea1d24d2bf8a348342bb1140ea343e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:32:15 +1200
-Subject: [PATCH 15/25] platform/x86: asus-armoury: add dgpu tgp control
+Subject: [PATCH 16/35] platform/x86: asus-armoury: add dgpu tgp control
 
 Implement the dgpu TGP control under the asus-armoury module using the
 fw_attributes class.
@@ -125,5 +125,5 @@ index a6064995c2cc..8c755799eb60 100644
  #define ASUS_WMI_DEVID_GPU_MUX		0x00090016
  #define ASUS_WMI_DEVID_GPU_MUX_VIVO	0x00090026
 -- 
-2.46.2
+2.47.0
 

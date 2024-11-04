@@ -1,7 +1,7 @@
-From 523cacfa5a07670310b3ae71639ed6a317e66f07 Mon Sep 17 00:00:00 2001
+From 701abe08dd80c81c5e196c6b1cce6c6c480bb39b Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
-Subject: [PATCH 21/31] hid-asus-ally: Add joystick LED ring support
+Subject: [PATCH 24/35] hid-asus-ally: Add joystick LED ring support
 
 Adds basic support for the joystick RGB LED rings as a multicolour LED
 device with 4 LEDs.
@@ -779,5 +779,5 @@ index 07bbe3cc48a9..567087401159 100644
  	    USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD),
  	  QUIRK_ROG_CLAYMORE_II_KEYBOARD },
 -- 
-2.46.2
+2.47.0
 
