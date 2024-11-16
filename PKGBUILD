@@ -7,7 +7,7 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=cfaaa7d010d1fc58f9717fcc8591201e741d2d49
+_commit=e8bdb3c8be08c9a3edc0a373c0aa8729355a0705
 _rc=rc7
 pkgbase=linux${_basever}
 pkgver=6.12.0rc7
@@ -94,8 +94,8 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('3efe9ce35924b8983ec63f5c559d95db0914ce788b7d57fa6889a0a671e23d95'
-            '919b1ae6c9144897690dce2dc624e91a3c9777b82918562216cd7f10af97a0a6'
+sha256sums=('20b5a88eaa074e38a25d7380e6eb72b079ae715d7412fb3f21f2b11418b8e64a'
+            '9e497349762ccdf9037575a07142bc082d356c0594466f1f601e389159cfc71f'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
