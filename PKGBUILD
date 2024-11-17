@@ -7,11 +7,11 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=e8bdb3c8be08c9a3edc0a373c0aa8729355a0705
+_commit=4a5df37964673effcd9f84041f7423206a5ae5f2
 _rc=rc7
 pkgbase=linux${_basever}
 pkgver=6.12.0rc7
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -94,7 +94,7 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('20b5a88eaa074e38a25d7380e6eb72b079ae715d7412fb3f21f2b11418b8e64a'
+sha256sums=('cc0d7c53e1aec1790ccc717ce173edfa6d6b82feaa883ca746336ad729c465a6'
             '9e497349762ccdf9037575a07142bc082d356c0594466f1f601e389159cfc71f'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
