@@ -78,7 +78,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.
         0033-hid-asus-ally-add-anti-deadzones.patch
         0034-hid-asus-ally-add-JS-response-curves.patch
         0035-hid-asus-ally-add-calibrations-wip.patch
-        0036-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241104093138.4819-1-baojun.xu@ti.com/raw
+        0036-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241116075006.11994-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Steamdeck (OLED)
@@ -126,7 +126,7 @@ sha256sums=('cc0d7c53e1aec1790ccc717ce173edfa6d6b82feaa883ca746336ad729c465a6'
             '6bd3eeea07f47fd2e1810426750a13426cb20ea5a505c595d41bb428ad2e3437'
             '489ec97424261e2e4f4307e25ed9c501d88e3c3a4c23e3928cc0150acff3d520'
             '38168d0ce594da13917cc86590bd92848a96c7e6dfb1170e06d0d53a84a04dea'
-            '7efb8ffa50bfc89aab0e1832dbc8829baad63e68aa439c03f1739fc1066a48e6'
+            'ec271de821e530fc673faba3468858bd49956ba3a3ec596b74cfb4584cf5c6d5'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
