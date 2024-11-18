@@ -7,11 +7,11 @@
 _basekernel=6.12
 _basever=${_basekernel//.}
 _kernelname=-MANJARO
-_commit=4a5df37964673effcd9f84041f7423206a5ae5f2
-_rc=rc7
+_commit=
+_rc=
 pkgbase=linux${_basever}
-pkgver=6.12.0rc7
-pkgrel=3
+pkgver=6.12.0
+pkgrel=1
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -31,8 +31,9 @@ options=(
   !strip
 )
 source=(#"https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.xz"
+        https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}.tar.gz
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}-${_rc}.tar.gz
-        https://github.com/torvalds/linux/archive/${_commit}.tar.gz
+        #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
         #https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
@@ -94,7 +95,7 @@ else
   _srcdir="linux-${_basekernel}"
 fi
 
-sha256sums=('cc0d7c53e1aec1790ccc717ce173edfa6d6b82feaa883ca746336ad729c465a6'
+sha256sums=('c148131ddf77ec5252eb1067cad8ed62b498c4bee79cc46b44659f2348cbd494'
             '9e497349762ccdf9037575a07142bc082d356c0594466f1f601e389159cfc71f'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
