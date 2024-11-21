@@ -1,7 +1,7 @@
-From 8db954d380b7078e898da8ea67545d5e99c0f90c Mon Sep 17 00:00:00 2001
+From 8bb0010337471174b9a8cb87ffc1b58b4c7c73cf Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 21:22:40 +1300
-Subject: [PATCH 34/35] hid-asus-ally: add JS response curves
+Subject: [PATCH 27/29] hid-asus-ally: add JS response curves
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -10,7 +10,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 141 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index d8d0c9471dc7..af3265bedb3b 100644
+index 3e4d9b19dc41..4d9954362625 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -5,8 +5,10 @@
@@ -24,7 +24,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  #include "linux/slab.h"
  #include <linux/hid.h>
  #include <linux/types.h>
-@@ -258,6 +260,17 @@ struct deadzone {
+@@ -262,6 +264,17 @@ struct deadzone {
  	u8 outer;
  };
  
@@ -42,7 +42,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  /* ROG Ally has many settings related to the gamepad, all using the same n-key endpoint */
  struct ally_gamepad_cfg {
  	struct hid_device *hdev;
-@@ -282,6 +295,9 @@ struct ally_gamepad_cfg {
+@@ -286,6 +299,9 @@ struct ally_gamepad_cfg {
  	/* anti-deadzones */
  	u8 ls_adz; // left stick
  	u8 rs_adz; // right stick
@@ -52,7 +52,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  };
  
  /* The hatswitch outputs integers, we use them to index this X|Y pair */
-@@ -705,10 +721,85 @@ static ssize_t axis_xy_right_anti_deadzone_store(struct device *dev,
+@@ -709,10 +725,85 @@ static ssize_t axis_xy_right_anti_deadzone_store(struct device *dev,
  }
  ALLY_DEVICE_ATTR_RW(axis_xy_right_anti_deadzone, anti_deadzone);
  
@@ -138,7 +138,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	NULL
  };
  static const struct attribute_group axis_xy_left_attr_group = {
-@@ -720,6 +811,14 @@ static struct attribute *axis_xy_right_attrs[] = {
+@@ -724,6 +815,14 @@ static struct attribute *axis_xy_right_attrs[] = {
  	&dev_attr_axis_xy_right_anti_deadzone.attr,
  	&dev_attr_axis_xy_right_deadzone.attr,
  	&dev_attr_axis_xyz_deadzone_index.attr,
@@ -153,7 +153,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	NULL
  };
  static const struct attribute_group axis_xy_right_attr_group = {
-@@ -920,6 +1019,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -919,6 +1018,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_js_ADZ(hdev, ally_cfg);
@@ -163,7 +163,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	if (ret < 0)
  		return ret;
  
-@@ -1075,6 +1177,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -1166,6 +1268,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->vibration_intensity[1] = 0x64;
  	_gamepad_set_deadzones_default(ally_cfg);
  	_gamepad_set_anti_deadzones_default(ally_cfg);
@@ -172,7 +172,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	drvdata.gamepad_cfg = ally_cfg; // Must asign before attr group setup
  	if (sysfs_create_groups(&hdev->dev.kobj, gamepad_device_attr_groups)) {
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index e2b8464a09bd..2172f7dd703b 100644
+index 9c13de73749c..518d8db3af5e 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -28,6 +28,7 @@ enum xpad_cmd {
@@ -191,7 +191,7 @@ index e2b8464a09bd..2172f7dd703b 100644
  	xpad_cmd_len_adz = 0x02,
  };
  
-@@ -305,6 +307,42 @@ enum btn_pair_index {
+@@ -309,6 +311,42 @@ enum btn_pair_index {
  	ALLY_DEADZONE_STORE(_fname##_deadzone, _mname);                   \
  	ALLY_DEVICE_ATTR_RW(_fname##_deadzone, deadzone)
  

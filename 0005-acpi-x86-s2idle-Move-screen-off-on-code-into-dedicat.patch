@@ -1,7 +1,7 @@
-From d2fb4d6815bb8ef0b4e9c0704bf0657fe7341003 Mon Sep 17 00:00:00 2001
+From eab143487ae4fd50485aa4bb23a7f40d54136bf5 Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:20:13 -0500
-Subject: [PATCH 09/35] acpi/x86: s2idle: Move screen off/on code into
+Subject: [PATCH 05/29] acpi/x86: s2idle: Move screen off/on code into
  dedicated callbacks
 
 This lets the DRM core notify on screen events instead of calling

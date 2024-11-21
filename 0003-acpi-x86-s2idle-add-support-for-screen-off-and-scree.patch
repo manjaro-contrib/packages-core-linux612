@@ -1,7 +1,7 @@
-From ee68967e8a0dc005830afc318539e578f3207539 Mon Sep 17 00:00:00 2001
+From 3caa5c1f95edc1a83b2db454ae9658b21893937d Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 12:50:25 -0500
-Subject: [PATCH 07/35] acpi/x86: s2idle: add support for screen off and screen
+Subject: [PATCH 03/29] acpi/x86: s2idle: add support for screen off and screen
  on callbacks
 
 All the _DSM methods for the LPS0 method are called back to back

@@ -1,7 +1,7 @@
-From 197974e50bc5ea1012345c6c26dbe55dce74b41e Mon Sep 17 00:00:00 2001
+From d7e107d0bd1a84c9ea39b5c7581273d2d0f4a7c0 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:23:35 +1200
-Subject: [PATCH 14/35] platform/x86: asus-armoury: add panel_hd_mode attribute
+Subject: [PATCH 10/29] platform/x86: asus-armoury: add panel_hd_mode attribute
 
 Add panel_hd_mode to toggle the panel mode between single and high
 definition modes.
@@ -14,10 +14,10 @@ Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
  2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 0085f1b112ab..a4a615dc919b 100644
+index 0dd0af6c97e4..e6bfb98420dd 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
-@@ -106,7 +106,8 @@ static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
+@@ -107,7 +107,8 @@ static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
  
  static bool asus_bios_requires_reboot(struct kobj_attribute *attr)
  {
@@ -26,8 +26,8 @@ index 0085f1b112ab..a4a615dc919b 100644
 +	       !strcmp(attr->attr.name, "panel_hd_mode");
  }
  
- /**
-@@ -439,6 +440,8 @@ ATTR_GROUP_BOOL_RW(mcu_powersave, "mcu_powersave", ASUS_WMI_DEVID_MCU_POWERSAVE,
+ static int armoury_wmi_set_devstate(struct kobj_attribute *attr, u32 value, u32 wmi_dev)
+@@ -419,6 +420,8 @@ ATTR_GROUP_BOOL_RW(mcu_powersave, "mcu_powersave", ASUS_WMI_DEVID_MCU_POWERSAVE,
  		   "Set MCU powersaving mode");
  ATTR_GROUP_BOOL_RW(panel_od, "panel_overdrive", ASUS_WMI_DEVID_PANEL_OD,
  		   "Set the panel refresh overdrive");
@@ -36,7 +36,7 @@ index 0085f1b112ab..a4a615dc919b 100644
  ATTR_GROUP_BOOL_RO(egpu_connected, "egpu_connected", ASUS_WMI_DEVID_EGPU_CONNECTED,
  		   "Show the eGPU connection status");
  
-@@ -452,6 +455,7 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -432,6 +435,7 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
  	{ &mcu_powersave_attr_group, ASUS_WMI_DEVID_MCU_POWERSAVE },
  	{ &panel_od_attr_group, ASUS_WMI_DEVID_PANEL_OD },

@@ -1,7 +1,7 @@
-From 49a2db1e94945da935d1e4eaa3029119e51b57b2 Mon Sep 17 00:00:00 2001
+From ca235eed0921b7d5f20373bbfb940285480909d3 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 1 Sep 2024 14:30:37 +1200
-Subject: [PATCH 10/35] platform/x86: asus-wmi: Refactor Ally suspend/resume
+Subject: [PATCH 06/29] platform/x86: asus-wmi: Refactor Ally suspend/resume
 
 The CSEE method from ACPI is now called only on module load. This fixes
 an issues with USB device loss on Ally 1 after reboot.
@@ -23,10 +23,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 48 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index 08861792bddd..3faa4a8e4cb6 100644
+index 58970178acaa..e34642760020 100644
 --- a/drivers/platform/x86/asus-wmi.c
 +++ b/drivers/platform/x86/asus-wmi.c
-@@ -143,16 +143,19 @@ module_param(fnlock_default, bool, 0444);
+@@ -142,16 +142,19 @@ module_param(fnlock_default, bool, 0444);
  #define ASUS_MINI_LED_2024_STRONG	0x01
  #define ASUS_MINI_LED_2024_OFF		0x02
  
@@ -50,7 +50,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  	{
  		.matches = {
  			DMI_MATCH(DMI_BOARD_NAME, "RC71L"),
-@@ -275,9 +278,6 @@ struct asus_wmi {
+@@ -274,9 +277,6 @@ struct asus_wmi {
  	u32 tablet_switch_dev_id;
  	bool tablet_switch_inverted;
  
@@ -60,7 +60,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  	enum fan_type fan_type;
  	enum fan_type gpu_fan_type;
  	enum fan_type mid_fan_type;
-@@ -336,6 +336,8 @@ struct asus_wmi {
+@@ -335,6 +335,8 @@ struct asus_wmi {
  	struct asus_wmi_driver *driver;
  };
  
@@ -69,7 +69,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  /* WMI ************************************************************************/
  
  static int asus_wmi_evaluate_method3(u32 method_id,
-@@ -4762,6 +4764,18 @@ static int asus_wmi_add(struct platform_device *pdev)
+@@ -4758,6 +4760,18 @@ static int asus_wmi_add(struct platform_device *pdev)
  	if (err)
  		goto fail_platform;
  
@@ -88,7 +88,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  	/* ensure defaults for tunables */
  	asus->ppt_pl2_sppt = 5;
  	asus->ppt_pl1_spl = 5;
-@@ -4774,8 +4788,6 @@ static int asus_wmi_add(struct platform_device *pdev)
+@@ -4770,8 +4784,6 @@ static int asus_wmi_add(struct platform_device *pdev)
  	asus->egpu_enable_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_EGPU);
  	asus->dgpu_disable_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_DGPU);
  	asus->kbd_rgb_state_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_TUF_RGB_STATE);
@@ -97,7 +97,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  
  	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_MINI_LED_MODE))
  		asus->mini_led_dev_id = ASUS_WMI_DEVID_MINI_LED_MODE;
-@@ -4966,34 +4978,6 @@ static int asus_hotk_resume(struct device *device)
+@@ -4962,34 +4974,6 @@ static int asus_hotk_resume(struct device *device)
  	return 0;
  }
  
@@ -132,7 +132,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  static int asus_hotk_restore(struct device *device)
  {
  	struct asus_wmi *asus = dev_get_drvdata(device);
-@@ -5034,11 +5018,32 @@ static int asus_hotk_restore(struct device *device)
+@@ -5030,11 +5014,32 @@ static int asus_hotk_restore(struct device *device)
  	return 0;
  }
  
@@ -166,7 +166,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  	.prepare = asus_hotk_prepare,
  };
  
-@@ -5066,6 +5071,10 @@ static int asus_wmi_probe(struct platform_device *pdev)
+@@ -5062,6 +5067,10 @@ static int asus_wmi_probe(struct platform_device *pdev)
  			return ret;
  	}
  
@@ -177,7 +177,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
  	return asus_wmi_add(pdev);
  }
  
-@@ -5098,6 +5107,7 @@ EXPORT_SYMBOL_GPL(asus_wmi_register_driver);
+@@ -5094,6 +5103,7 @@ EXPORT_SYMBOL_GPL(asus_wmi_register_driver);
  
  void asus_wmi_unregister_driver(struct asus_wmi_driver *driver)
  {

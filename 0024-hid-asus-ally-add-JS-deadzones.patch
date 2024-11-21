@@ -1,7 +1,7 @@
-From 774197e2d018f686616375d1e4f88633c1a311b4 Mon Sep 17 00:00:00 2001
+From 456060265eeee3b42eaac96d442b1b75a13d47ff Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:32:41 +1300
-Subject: [PATCH 31/35] hid-asus-ally: add JS deadzones
+Subject: [PATCH 24/29] hid-asus-ally: add JS deadzones
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -10,10 +10,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 123 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 4dffa4335e0b..963fb7428665 100644
+index cdc45e2c79b4..9bb9ac3ce87b 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
-@@ -253,6 +253,11 @@ struct btn_mapping {
+@@ -257,6 +257,11 @@ struct btn_mapping {
  	struct btn_data btn_m2;
  };
  
@@ -25,7 +25,7 @@ index 4dffa4335e0b..963fb7428665 100644
  /* ROG Ally has many settings related to the gamepad, all using the same n-key endpoint */
  struct ally_gamepad_cfg {
  	struct hid_device *hdev;
-@@ -268,6 +273,10 @@ struct ally_gamepad_cfg {
+@@ -272,6 +277,10 @@ struct ally_gamepad_cfg {
  	 * max: 64
  	 */
  	u8 vibration_intensity[2];
@@ -36,7 +36,7 @@ index 4dffa4335e0b..963fb7428665 100644
  };
  
  /* The hatswitch outputs integers, we use them to index this X|Y pair */
-@@ -522,6 +531,75 @@ static ssize_t gamepad_vibration_intensity_store(struct device *dev,
+@@ -526,6 +535,75 @@ static ssize_t gamepad_vibration_intensity_store(struct device *dev,
  
  ALLY_DEVICE_ATTR_RW(gamepad_vibration_intensity, vibration_intensity);
  
@@ -112,7 +112,7 @@ index 4dffa4335e0b..963fb7428665 100644
  /* A HID packet conatins mappings for two buttons: btn1, btn1_macro, btn2, btn2_macro */
  static void _btn_pair_to_hid_pkt(struct ally_gamepad_cfg *ally_cfg,
  				enum btn_pair_index pair,
-@@ -689,6 +767,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -688,6 +766,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_turbo(hdev, ally_cfg);
@@ -122,7 +122,7 @@ index 4dffa4335e0b..963fb7428665 100644
  	if (ret < 0)
  		return ret;
  
-@@ -773,6 +854,8 @@ static const struct attribute_group ally_controller_attr_group = {
+@@ -864,6 +945,8 @@ static const struct attribute_group ally_controller_attr_group = {
  
  static const struct attribute_group *gamepad_device_attr_groups[] = {
  	&ally_controller_attr_group,
@@ -131,7 +131,7 @@ index 4dffa4335e0b..963fb7428665 100644
  	&btn_mapping_m1_attr_group,
  	&btn_mapping_m2_attr_group,
  	&btn_mapping_a_attr_group,
-@@ -838,6 +921,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -929,6 +1012,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  
  	ally_cfg->vibration_intensity[0] = 0x64;
  	ally_cfg->vibration_intensity[1] = 0x64;
@@ -140,7 +140,7 @@ index 4dffa4335e0b..963fb7428665 100644
  	drvdata.gamepad_cfg = ally_cfg; // Must asign before attr group setup
  	if (sysfs_create_groups(&hdev->dev.kobj, gamepad_device_attr_groups)) {
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 7c17eaefaf3a..02ce4bfc304e 100644
+index eea4696850fa..76ba5fcd593a 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -22,6 +22,7 @@ enum xpad_mode {
@@ -159,7 +159,7 @@ index 7c17eaefaf3a..02ce4bfc304e 100644
  	xpad_cmd_len_vibe_intensity = 0x02,
  	xpad_cmd_len_leds = 0x0C,
  	xpad_cmd_len_turbo = 0x20,
-@@ -263,6 +265,43 @@ enum btn_pair_index {
+@@ -267,6 +269,43 @@ enum btn_pair_index {
  		return count;                                                  \
  	}
  
