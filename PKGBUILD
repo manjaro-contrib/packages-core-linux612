@@ -34,7 +34,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}.tar.gz
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}-${_rc}.tar.gz
         #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
-        #https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
+        https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
         # ARCH Patches
@@ -74,7 +74,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0027-hid-asus-ally-add-JS-response-curves.patch
         0028-hid-asus-ally-add-calibrations-wip.patch
         0029-debug-by-default.patch
-        0030-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241116075006.11994-1-baojun.xu@ti.com/raw
+        0030-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Steamdeck (OLED)
@@ -91,6 +91,7 @@ else
 fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
+            '7013d2a29f02ca7508c7d6264afafdc0c0ee38cf5eef350e7b7f34f1393f2518'
             '050da549692f5ec1404edf067550f4296521810858479c794ff177a706c159ab'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
@@ -126,7 +127,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '8b22af5ac8eff69aaf374403e6aa515e52ca449191c8bfd75da98a4bed200ffb'
             '904b87f704dcb1db1ecc1fc692947c937500d51e8a92c5c57a9578fec10c116f'
             '32a79a85597516e58f76c0ebdfc78d89df359aebf274eb70a31f280c510710de'
-            'ec271de821e530fc673faba3468858bd49956ba3a3ec596b74cfb4584cf5c6d5'
+            '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
