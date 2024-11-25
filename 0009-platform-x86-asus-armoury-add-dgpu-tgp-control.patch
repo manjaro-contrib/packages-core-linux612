@@ -1,7 +1,7 @@
-From 348d9f1ee44c26aa37f4de43d8568ba7859a60ab Mon Sep 17 00:00:00 2001
+From 5ee126f412514f4d5b464dc2ddb5e23f9f4b8b3f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:32:15 +1200
-Subject: [PATCH 15/25] platform/x86: asus-armoury: add dgpu tgp control
+Subject: [PATCH 09/26] platform/x86: asus-armoury: add dgpu tgp control
 
 Implement the dgpu TGP control under the asus-armoury module using the
 fw_attributes class.
@@ -15,18 +15,18 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  3 files changed, 42 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 192c60bb1091..ac87b55a17b3 100644
+index 18b911040e57..10ab258855c4 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -45,6 +45,9 @@
- #define NVIDIA_BOOST_MAX 25
- #define NVIDIA_TEMP_MIN 75
- #define NVIDIA_TEMP_MAX 87
-+#define NVIDIA_POWER_MIN 0
-+#define NVIDIA_POWER_MAX 70
-+#define NVIDIA_POWER_DEFAULT 70
- #define PPT_CPU_LIMIT_MIN 5
- #define PPT_CPU_LIMIT_MAX 150
+ #define NVIDIA_BOOST_MAX      25
+ #define NVIDIA_TEMP_MIN       75
+ #define NVIDIA_TEMP_MAX       87
++#define NVIDIA_POWER_MIN      0
++#define NVIDIA_POWER_MAX      70
++#define NVIDIA_POWER_DEFAULT  70
+ #define PPT_CPU_LIMIT_MIN     5
+ #define PPT_CPU_LIMIT_MAX     150
  #define PPT_CPU_LIMIT_DEFAULT 80
 @@ -77,6 +80,11 @@ struct rog_tunables {
  	u32 nv_temp_min;
@@ -40,7 +40,7 @@ index 192c60bb1091..ac87b55a17b3 100644
  };
  
  static const struct class *fw_attr_class;
-@@ -477,6 +485,12 @@ ATTR_GROUP_ROG_TUNABLE(nv_dynamic_boost, "nv_dynamic_boost", ASUS_WMI_DEVID_NV_D
+@@ -457,6 +465,12 @@ ATTR_GROUP_ROG_TUNABLE(nv_dynamic_boost, "nv_dynamic_boost", ASUS_WMI_DEVID_NV_D
  ATTR_GROUP_ROG_TUNABLE(nv_temp_target, "nv_temp_target", ASUS_WMI_DEVID_NV_THERM_TARGET,
  		       nv_temp_default, nv_boost_min, nv_temp_max, 1,
  		       "Set the Nvidia max thermal limit");
@@ -53,7 +53,7 @@ index 192c60bb1091..ac87b55a17b3 100644
  
  ATTR_GROUP_ENUM_INT_RO(charge_mode, "charge_mode", ASUS_WMI_DEVID_CHARGE_MODE, "0;1;2",
  		       "Show the current mode of charging");
-@@ -505,6 +519,8 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -485,6 +499,8 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &ppt_fppt_attr_group, ASUS_WMI_DEVID_PPT_FPPT },
  	{ &nv_dynamic_boost_attr_group, ASUS_WMI_DEVID_NV_DYN_BOOST },
  	{ &nv_temp_target_attr_group, ASUS_WMI_DEVID_NV_THERM_TARGET },
@@ -62,8 +62,8 @@ index 192c60bb1091..ac87b55a17b3 100644
  
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
-@@ -678,6 +694,11 @@ static void init_rog_tunables(struct rog_tunables *rog)
- 	rog->nv_temp_max = NVIDIA_TEMP_MIN;
+@@ -659,6 +675,11 @@ static void init_rog_tunables(struct rog_tunables *rog)
+ 	rog->nv_temp_min = NVIDIA_TEMP_MIN;
  	rog->nv_temp_max = NVIDIA_TEMP_MAX;
  	rog->nv_temp_target = NVIDIA_TEMP_MIN;
 +
@@ -75,10 +75,10 @@ index 192c60bb1091..ac87b55a17b3 100644
  
  static int __init asus_fw_init(void)
 diff --git a/drivers/platform/x86/asus-armoury.h b/drivers/platform/x86/asus-armoury.h
-index ca570ed9c8ef..e08459cad942 100644
+index 91ec6f4cb149..9639e7ca772f 100644
 --- a/drivers/platform/x86/asus-armoury.h
 +++ b/drivers/platform/x86/asus-armoury.h
-@@ -89,6 +89,20 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -90,6 +90,20 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
  	static struct kobj_attribute attr_##_attrname##_##_prop =             \
  		__ASUS_ATTR_RO(_attrname, _prop)
  
@@ -99,7 +99,7 @@ index ca570ed9c8ef..e08459cad942 100644
  /* Boolean style enumeration, base macro. Requires adding show/store */
  #define __ATTR_GROUP_ENUM(_attrname, _fsname, _possible, _dispname)     \
  	__ATTR_SHOW_FMT(display_name, _attrname, "%s\n", _dispname);    \
-@@ -106,6 +120,10 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -107,6 +121,10 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
  		.name = _fsname, .attrs = _attrname##_attrs             \
  	}
  
@@ -125,5 +125,5 @@ index a6064995c2cc..8c755799eb60 100644
  #define ASUS_WMI_DEVID_GPU_MUX		0x00090016
  #define ASUS_WMI_DEVID_GPU_MUX_VIVO	0x00090026
 -- 
-2.46.2
+2.47.0
 

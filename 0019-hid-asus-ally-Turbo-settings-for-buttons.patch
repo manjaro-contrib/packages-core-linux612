@@ -1,7 +1,7 @@
-From fe3c8b7b78a9202b0247ac0fb900eb06beb26131 Mon Sep 17 00:00:00 2001
+From db3ab54526b0e8d3d82ce541a926323df8420823 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
-Subject: [PATCH 25/31] hid-asus-ally: Turbo settings for buttons
+Subject: [PATCH 19/26] hid-asus-ally: Turbo settings for buttons
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -10,10 +10,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 118 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 497b1f4afb02..9e147bca54be 100644
+index 7cecdc10ba2c..7f0000a2db3c 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
-@@ -229,6 +229,7 @@ static const char* btn_to_name(u64 key)
+@@ -233,6 +233,7 @@ static const char* btn_to_name(u64 key)
  struct btn_data {
  	u64 button;
  	u64 macro;
@@ -21,13 +21,13 @@ index 497b1f4afb02..9e147bca54be 100644
  };
  
  struct btn_mapping {
-@@ -522,6 +523,46 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
+@@ -527,6 +528,46 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
  	return ret;
  }
  
 +static int _gamepad_apply_turbo(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
 +{
-+	struct btn_mapping *map = ally_cfg->key_mapping[ally_cfg->mode];
++	struct btn_mapping *map = &ally_cfg->key_mapping[ally_cfg->mode - 1];
 +	u8 *hidbuf;
 +	int ret;
 +
@@ -65,10 +65,10 @@ index 497b1f4afb02..9e147bca54be 100644
 +	return ret;
 +}
 +
- static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribute *attr,
- 				       const char *buf, size_t count)
+ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
  {
-@@ -557,6 +598,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+ 	int ret;
+@@ -556,6 +597,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_lt_rt);
@@ -78,7 +78,7 @@ index 497b1f4afb02..9e147bca54be 100644
  	if (ret < 0)
  		return ret;
  
-@@ -565,24 +609,24 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -581,24 +625,24 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
  ALLY_DEVICE_ATTR_WO(gamepad_apply_all, apply_all);
  
  /* button map attributes, regular and macro*/
@@ -122,10 +122,10 @@ index 497b1f4afb02..9e147bca54be 100644
  static void _gamepad_set_xpad_default(struct ally_gamepad_cfg *ally_cfg)
  {
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 910a3997fc68..5b48f75b1075 100644
+index caec424c52e3..4e60e4c8f6d9 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
-@@ -23,12 +23,14 @@ enum xpad_cmd {
+@@ -24,6 +24,7 @@ enum xpad_cmd {
  	xpad_cmd_set_mapping = 0x02,
  	xpad_cmd_set_leds = 0x08,
  	xpad_cmd_check_ready = 0x0A,
@@ -133,14 +133,15 @@ index 910a3997fc68..5b48f75b1075 100644
  };
  
  /* the xpad_cmd determines which feature is set or queried */
- enum xpad_cmd_len {
+@@ -31,6 +32,7 @@ enum xpad_cmd_len {
+ 	xpad_cmd_len_mode = 0x01,
  	xpad_cmd_len_mapping = 0x2c,
  	xpad_cmd_len_leds = 0x0C,
 +	xpad_cmd_len_turbo = 0x20,
  };
  
  /* Values correspond to the actual HID byte value required */
-@@ -222,6 +224,37 @@ enum btn_pair_index {
+@@ -228,6 +230,37 @@ enum btn_pair_index {
  		return count;                                                  \
  	}
  
@@ -152,7 +153,7 @@ index 910a3997fc68..5b48f75b1075 100644
 +		struct btn_data *btn;                                          \
 +		if (!drvdata.gamepad_cfg)                                      \
 +			return -ENODEV;                                        \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
 +		return sysfs_emit(buf, "%d\n", btn->turbo);                    \
 +	}
 +
@@ -167,7 +168,7 @@ index 910a3997fc68..5b48f75b1075 100644
 +		int ret; \
 +		if (!drvdata.gamepad_cfg)                                      \
 +			return -ENODEV;                                        \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
 +		ret = kstrtobool(buf, &turbo);                                 \
 +		if (ret)                                                       \
 +			return ret;                                            \
@@ -178,7 +179,7 @@ index 910a3997fc68..5b48f75b1075 100644
  #define ALLY_BTN_ATTRS_GROUP(_name, _fname)                               \
  	static struct attribute *_fname##_attrs[] = {                     \
  		&dev_attr_##_fname.attr,                                  \
-@@ -232,11 +265,32 @@ enum btn_pair_index {
+@@ -238,11 +271,32 @@ enum btn_pair_index {
  		.attrs = _fname##_attrs,                                  \
  	}
  
@@ -214,5 +215,5 @@ index 910a3997fc68..5b48f75b1075 100644
 +	ALLY_DEVICE_ATTR_RW(btn_mapping_##_fname##_turbo, turbo);          \
 +	ALLY_BTN_ATTRS_GROUP_WITH_TURBO(btn_##_fname, btn_mapping_##_fname)
 -- 
-2.46.2
+2.47.0
 

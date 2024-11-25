@@ -1,7 +1,7 @@
-From 523cacfa5a07670310b3ae71639ed6a317e66f07 Mon Sep 17 00:00:00 2001
+From a2f479933369e7f9e25d9336ca4c389b140a819d Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
-Subject: [PATCH 21/31] hid-asus-ally: Add joystick LED ring support
+Subject: [PATCH 14/26] hid-asus-ally: Add joystick LED ring support
 
 Adds basic support for the joystick RGB LED rings as a multicolour LED
 device with 4 LEDs.
@@ -18,7 +18,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  create mode 100644 drivers/hid/hid-asus-ally.h
 
 diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index 08446c89eff6..ea0dbe9111c4 100644
+index f8a56d631242..d477df3a3f35 100644
 --- a/drivers/hid/Kconfig
 +++ b/drivers/hid/Kconfig
 @@ -164,6 +164,15 @@ config HID_ASUS
@@ -38,7 +38,7 @@ index 08446c89eff6..ea0dbe9111c4 100644
  	tristate "Aureal"
  	help
 diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index e40f1ddebbb7..2b2aa8b6f828 100644
+index 496dab54c73a..5fa65e1e1e3b 100644
 --- a/drivers/hid/Makefile
 +++ b/drivers/hid/Makefile
 @@ -31,6 +31,7 @@ obj-$(CONFIG_HID_APPLE)		+= hid-apple.o
@@ -725,7 +725,7 @@ index 000000000000..eb8617c80c2a
 +	xpad_cmd_len_adz = 0x02,
 +};
 diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-index 07bbe3cc48a9..567087401159 100644
+index 9540e3e19cce..7c5269cd4d76 100644
 --- a/drivers/hid/hid-asus.c
 +++ b/drivers/hid/hid-asus.c
 @@ -52,6 +52,10 @@ MODULE_DESCRIPTION("Asus HID Keyboard and TouchPad");
@@ -779,5 +779,5 @@ index 07bbe3cc48a9..567087401159 100644
  	    USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD),
  	  QUIRK_ROG_CLAYMORE_II_KEYBOARD },
 -- 
-2.46.2
+2.47.0
 
