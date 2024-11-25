@@ -1,16 +1,16 @@
-From c94cab817453e7a4e84ef650a27e29924a62f5b6 Mon Sep 17 00:00:00 2001
+From 4840deb4eb8e15ba05cdf4e951c3f01661155783 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:51:36 +1300
-Subject: [PATCH 19/29] hid-asus-ally: initial gamepad configuration
+Subject: [PATCH 23/31] hid-asus-ally: initial gamepad configuration
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/hid/hid-asus-ally.c | 259 +++++++++++++++++++++++++++++++++---
+ drivers/hid/hid-asus-ally.c | 257 +++++++++++++++++++++++++++++++++---
  drivers/hid/hid-asus-ally.h |  38 +++---
- 2 files changed, 264 insertions(+), 33 deletions(-)
+ 2 files changed, 262 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 33d9ac0c6bd5..eed1bc84026d 100644
+index 33d9ac0c6bd5..91e944e017b4 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -6,11 +6,8 @@
@@ -35,7 +35,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  static const u8 EC_INIT_STRING[] = { 0x5A, 'A', 'S', 'U', 'S', ' ', 'T', 'e','c', 'h', '.', 'I', 'n', 'c', '.', '\0' };
  static const u8 EC_MODE_LED_APPLY[] = { 0x5A, 0xB4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
  static const u8 EC_MODE_LED_SET[] = { 0x5A, 0xB5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-@@ -49,6 +49,58 @@ static const struct hid_device_id rog_ally_devices[] = {
+@@ -49,6 +49,57 @@ static const struct hid_device_id rog_ally_devices[] = {
  	{}
  };
  
@@ -47,9 +47,8 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
 +/* byte_array must be >= 8 in length */
 +static void btn_code_to_byte_array(u64 keycode, u8 *byte_array)
 +{
-+	/* Convert the u64 to bytes[8] */
-+	for (int i = 0; i < 8; ++i) {
-+		byte_array[i] = (keycode >> (56 - 8 * i)) & 0xFF;
++	for (int i = 0; i < BTN_CODE_BYTES_LEN; ++i) {
++		byte_array[i] = (keycode >> (8 * (BTN_CODE_BYTES_LEN - 1 - i))) & 0xFF;
 +	}
 +}
 +
@@ -94,7 +93,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  /* The hatswitch outputs integers, we use them to index this X|Y pair */
  static const int hat_values[][2] = {
  	{ 0, 0 }, { 0, -1 }, { 1, -1 }, { 1, 0 },   { 1, 1 },
-@@ -119,6 +171,7 @@ struct ally_rgb_data {
+@@ -119,6 +170,7 @@ struct ally_rgb_data {
  static struct ally_drvdata {
  	struct hid_device *hdev;
  	struct ally_x_device *ally_x;
@@ -102,7 +101,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  	struct ally_rgb_dev *led_rgb_dev;
  	struct ally_rgb_data led_rgb_data;
  } drvdata;
-@@ -173,6 +226,172 @@ static u8 get_endpoint_address(struct hid_device *hdev)
+@@ -173,6 +225,171 @@ static u8 get_endpoint_address(struct hid_device *hdev)
  	return -ENODEV;
  }
  
@@ -156,7 +155,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
 +				struct btn_data *btn1, struct btn_data *btn2,
 +				u8 *out, int out_len)
 +{
-+	int start = 5;
++	int index = 5;
 +
 +	out[0] = FEATURE_ROG_ALLY_REPORT_ID;
 +	out[1] = FEATURE_ROG_ALLY_CODE_PAGE;
@@ -164,14 +163,13 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
 +	out[3] = pair;
 +	out[4] = xpad_cmd_len_mapping;
 +
-+	btn_code_to_byte_array(btn1->button, &out[start]);
-+	start += BTN_DATA_LEN;
-+	btn_code_to_byte_array(btn1->macro, &out[start]);
-+	start += BTN_DATA_LEN;
-+	btn_code_to_byte_array(btn2->button, &out[start]);
-+	start += BTN_DATA_LEN;
-+	btn_code_to_byte_array(btn2->macro, &out[start]);
-+	//print_hex_dump(KERN_DEBUG, "byte_array: ", DUMP_PREFIX_OFFSET, 64, 1, out, 64, false);
++	btn_code_to_byte_array(btn1->button, &out[index]);
++	index += BTN_DATA_LEN;
++	btn_code_to_byte_array(btn1->macro, &out[index]);
++	index += BTN_DATA_LEN;
++	btn_code_to_byte_array(btn2->button, &out[index]);
++	index += BTN_DATA_LEN;
++	btn_code_to_byte_array(btn2->macro, &out[index]);
 +}
 +
 +/* Apply the mapping pair to the device */
@@ -275,7 +273,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  /**************************************************************************************************/
  /* ROG Ally gamepad i/o and force-feedback                                                        */
  /**************************************************************************************************/
-@@ -729,7 +948,7 @@ static void ally_rgb_remove(struct hid_device *hdev)
+@@ -729,7 +946,7 @@ static void ally_rgb_remove(struct hid_device *hdev)
  static int ally_raw_event(struct hid_device *hdev, struct hid_report *report, u8 *data,
  			  int size)
  {
@@ -284,7 +282,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  	struct ally_x_device *ally_x = drvdata.ally_x;
  
  	if (ally_x) {
-@@ -741,13 +960,13 @@ static int ally_raw_event(struct hid_device *hdev, struct hid_report *report, u8
+@@ -741,13 +958,13 @@ static int ally_raw_event(struct hid_device *hdev, struct hid_report *report, u8
  			return -1;
  		}
  	}
@@ -305,7 +303,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  
  	return 0;
  }
-@@ -866,7 +1085,7 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -866,7 +1083,7 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  	if (ep < 0)
  		return ep;
  
@@ -314,7 +312,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  	    ep != ALLY_X_INTERFACE_ADDRESS)
  		return -ENODEV;
  
-@@ -906,7 +1125,13 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -906,7 +1123,13 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  		else
  			hid_info(hdev, "Created Ally RGB LED controls.\n");
  
@@ -329,7 +327,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  			goto err_close;
  	}
  
-@@ -921,10 +1146,10 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -921,10 +1144,10 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  		hid_info(hdev, "Created Ally X controller.\n");
  
  		// Not required since we send this inputs ep through the gamepad input dev
@@ -345,7 +343,7 @@ index 33d9ac0c6bd5..eed1bc84026d 100644
  
  	return 0;
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 458d02996bca..2b298ad4da0e 100644
+index 458d02996bca..9c22e62ff0c6 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -8,35 +8,41 @@
@@ -396,8 +394,8 @@ index 458d02996bca..2b298ad4da0e 100644
 +	btn_pair_m1_m2 = 0x08,
 +};
 +
-+#define BTN_KB_M2             0x02008E0000000000
-+#define BTN_KB_M1             0x02008F0000000000
++#define BTN_KB_M2             0x02008E
++#define BTN_KB_M1             0x02008F
 +
 +#define ALLY_DEVICE_ATTR_WO(_name, _sysfs_name)    \
 +	struct device_attribute dev_attr_##_name = \
@@ -407,5 +405,5 @@ index 458d02996bca..2b298ad4da0e 100644
  #define ALLY_DEVICE_ATTR_RW(_name, _sysfs_name)    \
  	struct device_attribute dev_attr_##_name = \
 -- 
-2.47.0
+2.46.2
 

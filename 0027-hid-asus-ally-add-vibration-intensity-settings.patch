@@ -1,19 +1,19 @@
-From f4fb10b9e0c1542ff9df755a7d800db05c479dad Mon Sep 17 00:00:00 2001
+From 300c24ed333a76cc9fc5b73090bbfab12446703f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 20:46:00 +1300
-Subject: [PATCH 23/29] hid-asus-ally: add vibration intensity settings
+Subject: [PATCH 27/31] hid-asus-ally: add vibration intensity settings
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/hid/hid-asus-ally.c | 93 +++++++++++++++++++++++++++++++++++++
- drivers/hid/hid-asus-ally.h |  6 +++
- 2 files changed, 99 insertions(+)
+ drivers/hid/hid-asus-ally.c | 92 ++++++++++++++++++++++++++++++++++++-
+ drivers/hid/hid-asus-ally.h | 10 +++-
+ 2 files changed, 99 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 7f0000a2db3c..cdc45e2c79b4 100644
+index 9e147bca54be..f8493341abc4 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
-@@ -267,6 +267,11 @@ struct ally_gamepad_cfg {
+@@ -263,6 +263,11 @@ struct ally_gamepad_cfg {
  	 * index: [mode]
  	 */
  	struct btn_mapping key_mapping[xpad_mode_mouse];
@@ -21,11 +21,11 @@ index 7f0000a2db3c..cdc45e2c79b4 100644
 +	 * index: left, right
 +	 * max: 64
 +	 */
-+	u8 vibration_intensity[2];
++	u8 vibration_intensity[xpad_mode_mouse][2];
  };
  
  /* The hatswitch outputs integers, we use them to index this X|Y pair */
-@@ -438,6 +443,89 @@ static int ally_gamepad_check_ready(struct hid_device *hdev)
+@@ -434,6 +439,89 @@ static int ally_gamepad_check_ready(struct hid_device *hdev)
  	return ret;
  }
  
@@ -52,8 +52,8 @@ index 7f0000a2db3c..cdc45e2c79b4 100644
 +	hidbuf[1] = FEATURE_ROG_ALLY_CODE_PAGE;
 +	hidbuf[2] = xpad_cmd_set_vibe_intensity;
 +	hidbuf[3] = xpad_cmd_len_vibe_intensity;
-+	hidbuf[4] = ally_cfg->vibration_intensity[0];
-+	hidbuf[5] = ally_cfg->vibration_intensity[1];
++	hidbuf[4] = ally_cfg->vibration_intensity[ally_cfg->mode - 1][0];
++	hidbuf[5] = ally_cfg->vibration_intensity[ally_cfg->mode - 1][1];
 +
 +	ret = ally_gamepad_check_ready(hdev);
 +	if (ret < 0)
@@ -78,8 +78,8 @@ index 7f0000a2db3c..cdc45e2c79b4 100644
 +
 +	return sysfs_emit(
 +		buf, "%d %d\n",
-+		ally_cfg->vibration_intensity[0],
-+		ally_cfg->vibration_intensity[1]);
++		ally_cfg->vibration_intensity[ally_cfg->mode - 1][0],
++		ally_cfg->vibration_intensity[ally_cfg->mode - 1][1]);
 +}
 +
 +static ssize_t gamepad_vibration_intensity_store(struct device *dev,
@@ -100,8 +100,8 @@ index 7f0000a2db3c..cdc45e2c79b4 100644
 +	if (left > 64 || right > 64)
 +		return -EINVAL;
 +
-+	ally_cfg->vibration_intensity[0] = left;
-+	ally_cfg->vibration_intensity[1] = right;
++	ally_cfg->vibration_intensity[ally_cfg->mode - 1][0] = left;
++	ally_cfg->vibration_intensity[ally_cfg->mode - 1][1] = right;
 +
 +	ret = _gamepad_apply_intensity(hdev, ally_cfg);
 +	if (ret < 0)
@@ -115,27 +115,26 @@ index 7f0000a2db3c..cdc45e2c79b4 100644
  /* A HID packet conatins mappings for two buttons: btn1, btn1_macro, btn2, btn2_macro */
  static void _btn_pair_to_hid_pkt(struct ally_gamepad_cfg *ally_cfg,
  				enum btn_pair_index pair,
-@@ -765,6 +853,8 @@ static struct attribute *gamepad_device_attrs[] = {
+@@ -525,7 +613,7 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
+ 
+ static int _gamepad_apply_turbo(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
+ {
+-	struct btn_mapping *map = ally_cfg->key_mapping[ally_cfg->mode];
++	struct btn_mapping *map = &ally_cfg->key_mapping[ally_cfg->mode];
+ 	u8 *hidbuf;
+ 	int ret;
+ 
+@@ -674,6 +762,8 @@ ALLY_DEVICE_ATTR_WO(btn_mapping_reset, reset_btn_mapping);
+ static struct attribute *gamepad_device_attrs[] = {
  	&dev_attr_btn_mapping_reset.attr,
- 	&dev_attr_gamepad_mode.attr,
  	&dev_attr_gamepad_apply_all.attr,
 +	&dev_attr_gamepad_vibration_intensity.attr,
 +	&dev_attr_gamepad_vibration_intensity_index.attr,
  	NULL
  };
  
-@@ -837,6 +927,9 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
- 	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m2.button = BTN_KB_M2;
- 	_gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_m1_m2);
- 
-+	ally_cfg->vibration_intensity[0] = 0x64;
-+	ally_cfg->vibration_intensity[1] = 0x64;
-+
- 	drvdata.gamepad_cfg = ally_cfg; // Must asign before attr group setup
- 	if (sysfs_create_groups(&hdev->dev.kobj, gamepad_device_attr_groups)) {
- 		err = -ENODEV;
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 4e60e4c8f6d9..eea4696850fa 100644
+index 6761afe847d8..7c17eaefaf3a 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -22,6 +22,7 @@ enum xpad_mode {
@@ -154,7 +153,7 @@ index 4e60e4c8f6d9..eea4696850fa 100644
  	xpad_cmd_len_leds = 0x0C,
  	xpad_cmd_len_turbo = 0x20,
  };
-@@ -196,6 +198,10 @@ enum btn_pair_index {
+@@ -192,6 +194,10 @@ enum btn_pair_index {
  	struct device_attribute dev_attr_##_name = \
  		__ATTR(_sysfs_name, 0644, _name##_show, _name##_store)
  
@@ -165,6 +164,24 @@ index 4e60e4c8f6d9..eea4696850fa 100644
  /* button specific macros */
  #define ALLY_BTN_SHOW(_fname, _btn_name, _secondary)                           \
  	static ssize_t _fname##_show(struct device *dev,                       \
+@@ -234,7 +240,7 @@ enum btn_pair_index {
+ 		struct btn_data *btn;                                          \
+ 		if (!drvdata.gamepad_cfg)                                      \
+ 			return -ENODEV;                                        \
+-		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
+ 		return sysfs_emit(buf, "%d\n", btn->turbo);                    \
+ 	}
+ 
+@@ -249,7 +255,7 @@ enum btn_pair_index {
+ 		int ret; \
+ 		if (!drvdata.gamepad_cfg)                                      \
+ 			return -ENODEV;                                        \
+-		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
+ 		ret = kstrtobool(buf, &turbo);                                 \
+ 		if (ret)                                                       \
+ 			return ret;                                            \
 -- 
-2.47.0
+2.46.2
 

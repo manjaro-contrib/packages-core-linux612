@@ -1,7 +1,7 @@
-From 17ee2945807d581f9db68e70eaedeb31b4e2d86b Mon Sep 17 00:00:00 2001
+From 54cb028ccf0a195ca6cb6a62ec05c7e1c8499370 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
-Subject: [PATCH 11/29] platform/x86: asus-armoury: add the ppt_* and nv_*
+Subject: [PATCH 14/25] platform/x86: asus-armoury: add the ppt_* and nv_*
  tuning knobs
 
 Adds the ppt_* and nv_* tuning knobs that are available via WMI methods
@@ -10,17 +10,17 @@ and adds proper min/max levels plus defaults.
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
- drivers/platform/x86/asus-armoury.c | 135 ++++++++++++++++++++++++++++
+ drivers/platform/x86/asus-armoury.c | 134 ++++++++++++++++++++++++++++
  drivers/platform/x86/asus-armoury.h |  65 ++++++++++++++
- 2 files changed, 200 insertions(+)
+ 2 files changed, 199 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index e6bfb98420dd..18b911040e57 100644
+index a4a615dc919b..192c60bb1091 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -52,12 +52,40 @@
- #define PPT_PLATFORM_MAX      100
- #define PPT_PLATFORM_DEFAULT  80
+ #define PPT_PLATFORM_MAX 100
+ #define PPT_PLATFORM_DEFAULT 80
  
 +/* Tunables provided by ASUS for gaming laptops */
 +struct rog_tunables {
@@ -59,7 +59,7 @@ index e6bfb98420dd..18b911040e57 100644
  	u32 mini_led_dev_id;
  	u32 gpu_mux_dev_id;
  
-@@ -411,6 +439,25 @@ WMI_SHOW_INT(egpu_enable_current_value, "%d\n", ASUS_WMI_DEVID_EGPU);
+@@ -431,6 +459,25 @@ WMI_SHOW_INT(egpu_enable_current_value, "%d\n", ASUS_WMI_DEVID_EGPU);
  ATTR_GROUP_BOOL_CUSTOM(egpu_enable, "egpu_enable", "Enable the eGPU (also disables dGPU)");
  
  /* Simple attribute creation */
@@ -85,7 +85,7 @@ index e6bfb98420dd..18b911040e57 100644
  ATTR_GROUP_ENUM_INT_RO(charge_mode, "charge_mode", ASUS_WMI_DEVID_CHARGE_MODE, "0;1;2",
  		       "Show the current mode of charging");
  
-@@ -431,6 +478,14 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -451,6 +498,14 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &egpu_enable_attr_group, ASUS_WMI_DEVID_EGPU },
  	{ &dgpu_disable_attr_group, ASUS_WMI_DEVID_DGPU },
  
@@ -100,7 +100,7 @@ index e6bfb98420dd..18b911040e57 100644
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
  	{ &mcu_powersave_attr_group, ASUS_WMI_DEVID_MCU_POWERSAVE },
-@@ -532,6 +587,80 @@ static int asus_fw_attr_add(void)
+@@ -552,6 +607,79 @@ static int asus_fw_attr_add(void)
  
  /* Init / exit ****************************************************************/
  
@@ -119,7 +119,6 @@ index e6bfb98420dd..18b911040e57 100644
 +	 * "ROG Flow X16 GV601VV_GV601VV_00185149B".
 +	 * The bulk of these defaults are gained from users reporting what
 +	 * ASUS Armoury Crate in Windows provides them.
-+	 * This should be turned in to a table eventually.
 +	 */
 +	product = dmi_get_system_info(DMI_PRODUCT_NAME);
 +
@@ -168,12 +167,12 @@ index e6bfb98420dd..18b911040e57 100644
 +	rog->ppt_fppt = cpu_default;
 +
 +	rog->nv_boost_default = NVIDIA_BOOST_MAX;
-+	rog->nv_boost_min = NVIDIA_BOOST_MIN;
++	rog->nv_boost_max = NVIDIA_BOOST_MIN;
 +	rog->nv_boost_max = max_boost;
 +	rog->nv_dynamic_boost = NVIDIA_BOOST_MIN;
 +
 +	rog->nv_temp_default = NVIDIA_TEMP_MAX;
-+	rog->nv_temp_min = NVIDIA_TEMP_MIN;
++	rog->nv_temp_max = NVIDIA_TEMP_MIN;
 +	rog->nv_temp_max = NVIDIA_TEMP_MAX;
 +	rog->nv_temp_target = NVIDIA_TEMP_MIN;
 +}
@@ -181,7 +180,7 @@ index e6bfb98420dd..18b911040e57 100644
  static int __init asus_fw_init(void)
  {
  	char *wmi_uid;
-@@ -548,6 +677,12 @@ static int __init asus_fw_init(void)
+@@ -568,6 +696,12 @@ static int __init asus_fw_init(void)
  	if (!strcmp(wmi_uid, ASUS_ACPI_UID_ASUSWMI))
  		return -ENODEV;
  
@@ -195,10 +194,10 @@ index e6bfb98420dd..18b911040e57 100644
  	if (err)
  		return err;
 diff --git a/drivers/platform/x86/asus-armoury.h b/drivers/platform/x86/asus-armoury.h
-index b00d829c9da0..91ec6f4cb149 100644
+index 4d0dd34c52aa..ca570ed9c8ef 100644
 --- a/drivers/platform/x86/asus-armoury.h
 +++ b/drivers/platform/x86/asus-armoury.h
-@@ -17,6 +17,12 @@ static ssize_t attr_uint_store(struct kobject *kobj, struct kobj_attribute *attr
+@@ -17,6 +17,12 @@ static ssize_t attr_int_store(struct kobject *kobj, struct kobj_attribute *attr,
  			      const char *buf, size_t count, u32 min, u32 max,
  			      u32 *store_value, u32 wmi_dev);
  
@@ -211,7 +210,7 @@ index b00d829c9da0..91ec6f4cb149 100644
  static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
  			      char *buf)
  {
-@@ -144,4 +150,63 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -143,4 +149,63 @@ static ssize_t enum_type_show(struct kobject *kobj, struct kobj_attribute *attr,
  		.name = _fsname, .attrs = _attrname##_attrs               \
  	}
  
@@ -225,7 +224,7 @@ index b00d829c9da0..91ec6f4cb149 100644
 +		struct kobject *kobj, struct kobj_attribute *attr,            \
 +		const char *buf, size_t count)                                \
 +	{                                                                     \
-+		return attr_uint_store(kobj, attr, buf, count,                 \
++		return attr_int_store(kobj, attr, buf, count,                 \
 +				      asus_armoury.rog_tunables->_min,        \
 +				      asus_armoury.rog_tunables->_max,        \
 +				      &asus_armoury.rog_tunables->_attr,      \
@@ -276,5 +275,5 @@ index b00d829c9da0..91ec6f4cb149 100644
 +
  #endif /* _ASUS_BIOSCFG_H_ */
 -- 
-2.47.0
+2.46.2
 

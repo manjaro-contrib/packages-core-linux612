@@ -1,7 +1,7 @@
-From 16b6e7e81e0c4f46ee54537a6667434e0dbf3271 Mon Sep 17 00:00:00 2001
+From 431dd3fe36596d71113c70aaf9287a51eebd0d08 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 7 Jun 2024 15:58:01 +1200
-Subject: [PATCH 01/29] Input: xpad - add support for ASUS ROG RAIKIRI PRO
+Subject: [PATCH 04/25] Input: xpad - add support for ASUS ROG RAIKIRI PRO
 
 Add the VID/PID for ASUS ROG RAIKIRI PRO to
 xpad_device and the VID to xpad_table.
@@ -12,7 +12,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 92cff3f2658c..44c54419d93c 100644
+index 781c5aa29859..95a13905e4c5 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
 @@ -209,6 +209,7 @@
@@ -24,5 +24,5 @@ index 92cff3f2658c..44c54419d93c 100644
  #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X		0x1b4c
  #define USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD	0x196b
 -- 
-2.47.0
+2.46.2
 

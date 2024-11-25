@@ -1,7 +1,7 @@
-From b677aeffe6b57516fd6264af2e0498ab95663723 Mon Sep 17 00:00:00 2001
+From 301b867f241c76d3b02d91a82e2f4121d2aad8ad Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
-Subject: [PATCH 13/29] platform/x86: asus-armoury: add apu-mem control support
+Subject: [PATCH 16/25] platform/x86: asus-armoury: add apu-mem control support
 
 Implement the APU memory size control under the asus-armoury module using
 the fw_attributes class.
@@ -17,10 +17,10 @@ Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
  2 files changed, 115 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 10ab258855c4..271dadc4c75d 100644
+index ac87b55a17b3..09e0cbf24f25 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
-@@ -446,6 +446,119 @@ static ssize_t egpu_enable_current_value_store(struct kobject *kobj, struct kobj
+@@ -466,6 +466,119 @@ static ssize_t egpu_enable_current_value_store(struct kobject *kobj, struct kobj
  WMI_SHOW_INT(egpu_enable_current_value, "%d\n", ASUS_WMI_DEVID_EGPU);
  ATTR_GROUP_BOOL_CUSTOM(egpu_enable, "egpu_enable", "Enable the eGPU (also disables dGPU)");
  
@@ -140,7 +140,7 @@ index 10ab258855c4..271dadc4c75d 100644
  /* Simple attribute creation */
  ATTR_GROUP_ROG_TUNABLE(ppt_pl1_spl, "ppt_pl1_spl", ASUS_WMI_DEVID_PPT_PL1_SPL, cpu_default,
  		       cpu_min, cpu_max, 1, "Set the CPU slow package limit");
-@@ -501,6 +614,7 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -521,6 +634,7 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &nv_temp_target_attr_group, ASUS_WMI_DEVID_NV_THERM_TARGET },
  	{ &dgpu_base_tgp_attr_group, ASUS_WMI_DEVID_DGPU_BASE_TGP },
  	{ &dgpu_tgp_attr_group, ASUS_WMI_DEVID_DGPU_SET_TGP },
@@ -161,5 +161,5 @@ index 8c755799eb60..88bf250dc8ca 100644
  /* gpu mux switch, 0 = dGPU, 1 = Optimus */
  #define ASUS_WMI_DEVID_GPU_MUX		0x00090016
 -- 
-2.47.0
+2.46.2
 

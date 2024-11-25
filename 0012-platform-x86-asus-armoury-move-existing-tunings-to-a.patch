@@ -1,7 +1,7 @@
-From 15fd68f11942880ed76de5aa2bbd609b5bd597b4 Mon Sep 17 00:00:00 2001
+From 859dbffaffd584ae18c901624c3c3f1984906a8e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:39:43 +1200
-Subject: [PATCH 09/29] platform/x86: asus-armoury: move existing tunings to
+Subject: [PATCH 12/25] platform/x86: asus-armoury: move existing tunings to
  asus-armoury module
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -36,16 +36,16 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
  drivers/platform/x86/Kconfig               |  12 +
  drivers/platform/x86/Makefile              |   1 +
- drivers/platform/x86/asus-armoury.c        | 573 +++++++++++++++++++++
- drivers/platform/x86/asus-armoury.h        | 147 ++++++
+ drivers/platform/x86/asus-armoury.c        | 593 +++++++++++++++++++++
+ drivers/platform/x86/asus-armoury.h        | 146 +++++
  drivers/platform/x86/asus-wmi.c            |   4 -
  include/linux/platform_data/x86/asus-wmi.h |   3 +
- 6 files changed, 736 insertions(+), 4 deletions(-)
+ 6 files changed, 755 insertions(+), 4 deletions(-)
  create mode 100644 drivers/platform/x86/asus-armoury.c
  create mode 100644 drivers/platform/x86/asus-armoury.h
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 3875abba5a79..80ec8b45022d 100644
+index ddfccc226751..3b6eb44b2031 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -265,6 +265,18 @@ config ASUS_WIRELESS
@@ -81,10 +81,10 @@ index e1b142947067..fe3e7e7dede8 100644
  obj-$(CONFIG_ASUS_TF103C_DOCK)	+= asus-tf103c-dock.o
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
 new file mode 100644
-index 000000000000..0dd0af6c97e4
+index 000000000000..0085f1b112ab
 --- /dev/null
 +++ b/drivers/platform/x86/asus-armoury.c
-@@ -0,0 +1,573 @@
+@@ -0,0 +1,593 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Asus Armoury (WMI) attributes driver. This driver uses the fw_attributes
@@ -93,10 +93,10 @@ index 000000000000..0dd0af6c97e4
 + * These typically don't fit anywhere else in the sysfs such as under LED class,
 + * hwmon or other, and are set in Windows using the ASUS Armoury Crate tool.
 + *
-+ * Copyright(C) 2024 Luke Jones <luke@ljones.dev>
++ * Copyright(C) 2010 Intel Corporation.
++ * Copyright(C) 2024-2024 Luke Jones <luke@ljones.dev>
 + */
 +
-+#include "linux/cleanup.h"
 +#include <linux/bitfield.h>
 +#include <linux/device.h>
 +#include <linux/dmi.h>
@@ -116,28 +116,28 @@ index 000000000000..0dd0af6c97e4
 +
 +#define ASUS_NB_WMI_EVENT_GUID "0B3CBB35-E3C2-45ED-91C2-4C5A6D195D1C"
 +
-+#define ASUS_MINI_LED_MODE_MASK   0x03
++#define ASUS_MINI_LED_MODE_MASK 0x03
 +/* Standard modes for devices with only on/off */
-+#define ASUS_MINI_LED_OFF         0x00
-+#define ASUS_MINI_LED_ON          0x01
++#define ASUS_MINI_LED_OFF 0x00
++#define ASUS_MINI_LED_ON 0x01
 +/* Like "on" but the effect is more vibrant or brighter */
 +#define ASUS_MINI_LED_STRONG_MODE 0x02
 +/* New modes for devices with 3 mini-led mode types */
-+#define ASUS_MINI_LED_2024_WEAK   0x00
++#define ASUS_MINI_LED_2024_WEAK 0x00
 +#define ASUS_MINI_LED_2024_STRONG 0x01
-+#define ASUS_MINI_LED_2024_OFF    0x02
++#define ASUS_MINI_LED_2024_OFF 0x02
 +
 +/* Default limits for tunables available on ASUS ROG laptops */
-+#define NVIDIA_BOOST_MIN      5
-+#define NVIDIA_BOOST_MAX      25
-+#define NVIDIA_TEMP_MIN       75
-+#define NVIDIA_TEMP_MAX       87
-+#define PPT_CPU_LIMIT_MIN     5
-+#define PPT_CPU_LIMIT_MAX     150
++#define NVIDIA_BOOST_MIN 5
++#define NVIDIA_BOOST_MAX 25
++#define NVIDIA_TEMP_MIN 75
++#define NVIDIA_TEMP_MAX 87
++#define PPT_CPU_LIMIT_MIN 5
++#define PPT_CPU_LIMIT_MAX 150
 +#define PPT_CPU_LIMIT_DEFAULT 80
-+#define PPT_PLATFORM_MIN      5
-+#define PPT_PLATFORM_MAX      100
-+#define PPT_PLATFORM_DEFAULT  80
++#define PPT_PLATFORM_MIN 5
++#define PPT_PLATFORM_MAX 100
++#define PPT_PLATFORM_DEFAULT 80
 +
 +static const struct class *fw_attr_class;
 +
@@ -151,9 +151,8 @@ index 000000000000..0dd0af6c97e4
 +	struct mutex mutex;
 +};
 +
-+static struct asus_armoury_priv asus_armoury = {
-+	.mutex = __MUTEX_INITIALIZER(asus_armoury.mutex)
-+};
++static struct asus_armoury_priv asus_armoury = { .mutex = __MUTEX_INITIALIZER(
++							 asus_armoury.mutex) };
 +
 +struct fw_attrs_group {
 +	bool pending_reboot;
@@ -197,33 +196,10 @@ index 000000000000..0dd0af6c97e4
 +	return !strcmp(attr->attr.name, "gpu_mux_mode");
 +}
 +
-+static int armoury_wmi_set_devstate(struct kobj_attribute *attr, u32 value, u32 wmi_dev)
-+{
-+	u32 result;
-+	int err;
-+
-+	guard(mutex)(&asus_armoury.mutex);
-+	err = asus_wmi_set_devstate(wmi_dev, value, &result);
-+	if (err) {
-+		pr_err("Failed to set %s: %d\n", attr->attr.name, err);
-+		return err;
-+	}
-+	/*
-+	 * !1 is usually considered a fail by ASUS, but some WMI methods do use > 1
-+	 * to return a status code or similar.
-+	 */
-+	if (result < 1) {
-+		pr_err("Failed to set %s: (result): 0x%x\n", attr->attr.name, result);
-+		return -EIO;
-+	}
-+
-+	return 0;
-+}
-+
 +/**
-+ * attr_int_store() - Send an int to wmi method, checks if within min/max exclusive.
++ * attr_int_store() - Generic store function for use with most WMI functions.
 + * @kobj: Pointer to the driver object.
-+ * @attr: Pointer to the attribute calling this function.
++ * @kobj_attribute: Pointer to the attribute calling this function.
 + * @buf: The buffer to read from, this is parsed to `int` type.
 + * @count: Required by sysfs attribute macros, pass in from the callee attr.
 + * @min: Minimum accepted value. Below this returns -EINVAL.
@@ -231,19 +207,17 @@ index 000000000000..0dd0af6c97e4
 + * @store_value: Pointer to where the parsed value should be stored.
 + * @wmi_dev: The WMI function ID to use.
 + *
-+ * This function is intended to be generic so it can be called from any "_store"
-+ * attribute which works only with integers. The integer to be sent to the WMI method
-+ * is range checked and an error returned if out of range.
-+ *
-+ * If the value is valid and WMI is success, then the sysfs attribute is notified
-+ * and if asus_bios_requires_reboot() is true then reboot attribute is also notified.
++ * The WMI functions available on most ASUS laptops return a 1 as "success", and
++ * a 0 as failed. However some functions can return n > 1 for additional errors.
++ * The function currently treats all values which are not 1 as errors, ignoring
++ * the possible differences in WMI error returns.
 + *
 + * Returns: Either count, or an error.
 + */
-+static ssize_t attr_uint_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf,
++static ssize_t attr_int_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf,
 +			      size_t count, u32 min, u32 max, u32 *store_value, u32 wmi_dev)
 +{
-+	u32 value;
++	u32 result, value;
 +	int err;
 +
 +	err = kstrtouint(buf, 10, &value);
@@ -253,9 +227,18 @@ index 000000000000..0dd0af6c97e4
 +	if (value < min || value > max)
 +		return -EINVAL;
 +
-+	err = armoury_wmi_set_devstate(attr, value, wmi_dev);
-+	if (err)
++	mutex_lock(&asus_armoury.mutex);
++	err = asus_wmi_set_devstate(wmi_dev, value, &result);
++	mutex_unlock(&asus_armoury.mutex);
++	if (err) {
++		pr_err("Failed to set %s: %d\n", attr->attr.name, err);
 +		return err;
++	}
++
++	if (result != 1) {
++		pr_err("Failed to set %s (result): 0x%x\n", attr->attr.name, result);
++		return -EIO;
++	}
 +
 +	if (store_value != NULL)
 +		*store_value = value;
@@ -302,11 +285,11 @@ index 000000000000..0dd0af6c97e4
 +}
 +
 +static ssize_t mini_led_mode_current_value_store(struct kobject *kobj,
-+						 struct kobj_attribute *attr,
-+						const char *buf, size_t count)
++						 struct kobj_attribute *attr, const char *buf,
++						 size_t count)
 +{
++	int result, err;
 +	u32 mode;
-+	int err;
 +
 +	err = kstrtou32(buf, 10, &mode);
 +	if (err)
@@ -337,9 +320,18 @@ index 000000000000..0dd0af6c97e4
 +		}
 +	}
 +
-+	err = armoury_wmi_set_devstate(attr, mode, asus_armoury.mini_led_dev_id);
-+	if (err)
++	mutex_lock(&asus_armoury.mutex);
++	err = asus_wmi_set_devstate(asus_armoury.mini_led_dev_id, mode, &result);
++	mutex_unlock(&asus_armoury.mutex);
++	if (err) {
++		pr_warn("Failed to set mini-LED: %d\n", err);
 +		return err;
++	}
++
++	if (result != 1) {
++		pr_warn("Failed to set mini-LED mode (result): 0x%x\n", result);
++		return -EIO;
++	}
 +
 +	sysfs_notify(kobj, NULL, attr->attr.name);
 +
@@ -399,9 +391,18 @@ index 000000000000..0dd0af6c97e4
 +		}
 +	}
 +
-+	err = armoury_wmi_set_devstate(attr, optimus, asus_armoury.gpu_mux_dev_id);
-+	if (err)
++	mutex_lock(&asus_armoury.mutex);
++	err = asus_wmi_set_devstate(asus_armoury.gpu_mux_dev_id, optimus, &result);
++	mutex_unlock(&asus_armoury.mutex);
++	if (err) {
++		pr_err("Failed to set GPU MUX mode: %d\n", err);
 +		return err;
++	}
++	/* !1 is considered a fail by ASUS */
++	if (result != 1) {
++		pr_warn("Failed to set GPU MUX mode (result): 0x%x\n", result);
++		return -EIO;
++	}
 +
 +	sysfs_notify(kobj, NULL, attr->attr.name);
 +	asus_set_reboot_and_signal_event();
@@ -414,6 +415,8 @@ index 000000000000..0dd0af6c97e4
 +/*
 + * A user may be required to store the value twice, typical store first, then
 + * rescan PCI bus to activate power, then store a second time to save correctly.
++ * The reason for this is that an extra code path in the ACPI is enabled when
++ * the device and bus are powered.
 + */
 +static ssize_t dgpu_disable_current_value_store(struct kobject *kobj,
 +						struct kobj_attribute *attr, const char *buf,
@@ -438,12 +441,20 @@ index 000000000000..0dd0af6c97e4
 +			pr_warn("Can not disable dGPU when the MUX is in dGPU mode: %d\n", err);
 +			return err;
 +		}
-+		// TODO: handle a > 1 result, shouold do a PCI rescan and run again
 +	}
 +
-+	err = armoury_wmi_set_devstate(attr, disable, ASUS_WMI_DEVID_DGPU);
-+	if (err)
++	mutex_lock(&asus_armoury.mutex);
++	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_DGPU, disable, &result);
++	mutex_unlock(&asus_armoury.mutex);
++	if (err) {
++		pr_warn("Failed to set dGPU disable: %d\n", err);
 +		return err;
++	}
++
++	if (result != 1) {
++		pr_warn("Failed to set dGPU disable (result): 0x%x\n", result);
++		return -EIO;
++	}
 +
 +	sysfs_notify(kobj, NULL, attr->attr.name);
 +
@@ -485,9 +496,18 @@ index 000000000000..0dd0af6c97e4
 +		}
 +	}
 +
-+	err = armoury_wmi_set_devstate(attr, enable, ASUS_WMI_DEVID_EGPU);
-+	if (err)
++	mutex_lock(&asus_armoury.mutex);
++	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_EGPU, enable, &result);
++	mutex_unlock(&asus_armoury.mutex);
++	if (err) {
++		pr_warn("Failed to set eGPU state: %d\n", err);
 +		return err;
++	}
++
++	if (result != 1) {
++		pr_warn("Failed to set eGPU state (retval): 0x%x\n", result);
++		return -EIO;
++	}
 +
 +	sysfs_notify(kobj, NULL, attr->attr.name);
 +
@@ -529,15 +549,16 @@ index 000000000000..0dd0af6c97e4
 +	if (err)
 +		return err;
 +
-+	asus_armoury.fw_attr_dev = device_create(fw_attr_class, NULL, MKDEV(0, 0),
-+						NULL, "%s", DRIVER_NAME);
++	asus_armoury.fw_attr_dev =
++		device_create(fw_attr_class, NULL, MKDEV(0, 0), NULL, "%s", DRIVER_NAME);
++
 +	if (IS_ERR(asus_armoury.fw_attr_dev)) {
 +		err = PTR_ERR(asus_armoury.fw_attr_dev);
 +		goto fail_class_get;
 +	}
 +
-+	asus_armoury.fw_attr_kset = kset_create_and_add("attributes", NULL,
-+						&asus_armoury.fw_attr_dev->kobj);
++	asus_armoury.fw_attr_kset =
++		kset_create_and_add("attributes", NULL, &asus_armoury.fw_attr_dev->kobj);
 +	if (!asus_armoury.fw_attr_kset) {
 +		err = -ENOMEM;
 +		goto err_destroy_classdev;
@@ -552,31 +573,27 @@ index 000000000000..0dd0af6c97e4
 +	asus_armoury.mini_led_dev_id = 0;
 +	if (asus_wmi_is_present(ASUS_WMI_DEVID_MINI_LED_MODE)) {
 +		asus_armoury.mini_led_dev_id = ASUS_WMI_DEVID_MINI_LED_MODE;
++		err = sysfs_create_group(&asus_armoury.fw_attr_kset->kobj, &mini_led_mode_attr_group);
 +	} else if (asus_wmi_is_present(ASUS_WMI_DEVID_MINI_LED_MODE2)) {
 +		asus_armoury.mini_led_dev_id = ASUS_WMI_DEVID_MINI_LED_MODE2;
-+	}
-+
-+	if (asus_armoury.mini_led_dev_id) {
 +		err = sysfs_create_group(&asus_armoury.fw_attr_kset->kobj, &mini_led_mode_attr_group);
-+		if (err) {
-+			pr_err("Failed to create sysfs-group for mini_led\n");
-+			goto err_remove_file;
-+		}
++	}
++	if (err) {
++		pr_err("Failed to create sysfs-group for mini_led\n");
++		goto err_remove_file;
 +	}
 +
 +	asus_armoury.gpu_mux_dev_id = 0;
 +	if (asus_wmi_is_present(ASUS_WMI_DEVID_GPU_MUX)) {
 +		asus_armoury.gpu_mux_dev_id = ASUS_WMI_DEVID_GPU_MUX;
++		err = sysfs_create_group(&asus_armoury.fw_attr_kset->kobj, &gpu_mux_mode_attr_group);
 +	} else if (asus_wmi_is_present(ASUS_WMI_DEVID_GPU_MUX_VIVO)) {
 +		asus_armoury.gpu_mux_dev_id = ASUS_WMI_DEVID_GPU_MUX_VIVO;
-+	}
-+
-+	if (asus_armoury.gpu_mux_dev_id) {
 +		err = sysfs_create_group(&asus_armoury.fw_attr_kset->kobj, &gpu_mux_mode_attr_group);
-+		if (err) {
-+			pr_err("Failed to create sysfs-group for gpu_mux\n");
-+			goto err_remove_mini_led_group;
-+		}
++	}
++	if (err) {
++		pr_err("Failed to create sysfs-group for gpu_mux\n");
++		goto err_remove_mini_led_group;
 +	}
 +
 +	for (i = 0; i < ARRAY_SIZE(armoury_attr_groups); i++) {
@@ -589,6 +606,9 @@ index 000000000000..0dd0af6c97e4
 +			pr_err("Failed to create sysfs-group for %s\n",
 +			       armoury_attr_groups[i].attr_group->name);
 +			goto err_remove_groups;
++		} else {
++			pr_debug("Created sysfs-group for %s\n",
++				 armoury_attr_groups[i].attr_group->name);
 +		}
 +	}
 +
@@ -660,10 +680,10 @@ index 000000000000..0dd0af6c97e4
 +MODULE_ALIAS("wmi:" ASUS_NB_WMI_EVENT_GUID);
 diff --git a/drivers/platform/x86/asus-armoury.h b/drivers/platform/x86/asus-armoury.h
 new file mode 100644
-index 000000000000..b00d829c9da0
+index 000000000000..4d0dd34c52aa
 --- /dev/null
 +++ b/drivers/platform/x86/asus-armoury.h
-@@ -0,0 +1,147 @@
+@@ -0,0 +1,146 @@
 +/* SPDX-License-Identifier: GPL-2.0
 + *
 + * Definitions for kernel modules using asus-armoury driver
@@ -679,7 +699,7 @@ index 000000000000..b00d829c9da0
 +
 +#define DRIVER_NAME "asus-armoury"
 +
-+static ssize_t attr_uint_store(struct kobject *kobj, struct kobj_attribute *attr,
++static ssize_t attr_int_store(struct kobject *kobj, struct kobj_attribute *attr,
 +			      const char *buf, size_t count, u32 min, u32 max,
 +			      u32 *store_value, u32 wmi_dev);
 +
@@ -709,7 +729,7 @@ index 000000000000..b00d829c9da0
 +				     struct kobj_attribute *attr,         \
 +				     const char *buf, size_t count)       \
 +	{                                                                 \
-+		return attr_uint_store(kobj, attr, buf, count, _min, _max, \
++		return attr_int_store(kobj, attr, buf, count, _min, _max, \
 +				      NULL, _wmi);                        \
 +	}
 +
@@ -719,7 +739,6 @@ index 000000000000..b00d829c9da0
 +	{                                                                   \
 +		u32 result;                                                 \
 +		int err;                                                    \
-+		                                                            \
 +		err = asus_wmi_get_devstate_dsts(_wmi, &result);            \
 +		if (err)                                                    \
 +			return err;                                         \
@@ -812,7 +831,7 @@ index 000000000000..b00d829c9da0
 +
 +#endif /* _ASUS_BIOSCFG_H_ */
 diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index df7e102dc3e8..29cc43355948 100644
+index 341c4875713b..64e6a6caefa0 100644
 --- a/drivers/platform/x86/asus-wmi.c
 +++ b/drivers/platform/x86/asus-wmi.c
 @@ -55,8 +55,6 @@ module_param(fnlock_default, bool, 0444);
@@ -848,5 +867,5 @@ index 6ea4dedfb85e..21313e1eb6c9 100644
  #define ASUS_WMI_METHODID_SPEC	        0x43455053 /* BIOS SPECification */
  #define ASUS_WMI_METHODID_SFBD		0x44424653 /* Set First Boot Device */
 -- 
-2.47.0
+2.46.2
 
