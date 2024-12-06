@@ -10,8 +10,8 @@ _kernelname=-MANJARO
 _commit=
 _rc=
 pkgbase=linux${_basever}
-pkgver=6.12.2
-pkgrel=2
+pkgver=6.12.3
+pkgrel=1
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -36,9 +36,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
-        # Upstream Patches
-        # https://lore.kernel.org/stable/136fbb7aedc6e3750f8361309609ddf4283cd91d.camel@sapience.com/T/#m2c34572f142c215c338a8d08699a7631c92f26de
-        https://github.com/torvalds/linux/commit/b23decf8ac91.patch
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -91,9 +88,8 @@ else
 fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
-            'c7655b5876c1e3274945091ff124e930567611939b2a3619a5a6c297ba783c14'
+            'f1e8e172be21898ffed767271ec5cb3c441d0877d1d559e80ce0e8d237fc69d9'
             '050da549692f5ec1404edf067550f4296521810858479c794ff177a706c159ab'
-            '2468fcca17fc7e407f5540ec237d7cbe513080e9e0a7e25a59058c882ed466f7'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
