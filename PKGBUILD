@@ -42,8 +42,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0103_default_to_max_ASLR_bits.patch
         # Realtek patch
         0999-patch_realtek.patch
-        # [Bug 219517] REGRESSION: charge_control missing in 6.12
-        0001-platform-x86-asus-wmi-Ignore-return-value-when-writi.patch
         # ROG ALLY Patches (wip/ally-6.12)
         0001-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
         0002-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
@@ -94,7 +92,6 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
-            'a05376c25536d8d1f883f1e4d565a5ff92195625e5a97cfd61b436438757a5d7'
             'dbe849d61f464b1e6addab0f907a24ebd658251f6177ef21c8e19efbd33dcb59'
             '8561f1318d5b21a396a47c54c0dd03d908518423dd47ab823bb9aa0ff68f4e09'
             '438f26762b03f622794f52a3c3f9d0ab06f950750ead8a740b96dc78f4a817ea'
