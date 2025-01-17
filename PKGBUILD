@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.9
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -72,6 +72,9 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0027-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
+        # Zotac Zone patches
+        636de3f2be1d171b50c47b9f038b7a5b19d8667d.patch
+        aa776ec5fb0ff9f94cb546773e76a248e05084b5.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         0002-steamdeck-oled-audio.patch
@@ -120,6 +123,8 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'e537ae0480dc3a70f52a0913a21c43c7e7cde6909c472921af07aeabd92339b5'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
+            '23ab328eda2740ea07a09bb8534d21b47a12f8543a8b5a24ffb3b18ad6393efc'
+            'cffdcdf6e27376a2887a55aefc8078d8d09bf45da8480b9a9cdc2a72fa210872'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
 
