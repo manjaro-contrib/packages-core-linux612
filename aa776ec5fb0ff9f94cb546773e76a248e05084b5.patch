@@ -26,7 +26,7 @@ index 22ea58bf76cb5c..a86efce37dbfa2 100644
  	{ 0x20d6, 0x2001, "BDA Xbox Series X Wired Controller", 0, XTYPE_XBOXONE },
  	{ 0x20d6, 0x2009, "PowerA Enhanced Wired Controller for Xbox Series X|S", 0, XTYPE_XBOXONE },
  	{ 0x20d6, 0x281f, "PowerA Wired Controller For Xbox 360", 0, XTYPE_XBOX360 },
-@@ -515,6 +516,7 @@ static const struct usb_device_id xpad_table[] = {
+@@ -515,6 +516,7 @@ static const struct usb_device_id xpad_t
  	XPAD_XBOX360_VENDOR(0x17ef),		/* Lenovo */
  	XPAD_XBOX360_VENDOR(0x1949),		/* Amazon controllers */
  	XPAD_XBOX360_VENDOR(0x1bad),		/* Harmonix Rock Band guitar and drums */
