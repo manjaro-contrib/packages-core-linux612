@@ -55,7 +55,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0010-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
         0011-platform-x86-asus-armoury-add-core-count-control.patch
         0012-platform-x86-asus-wmi-deprecate-bios-features.patch
-        0013-ALSA-hda-realtek-fixup-ASUS-GA605W.patch
         0014-hid-asus-ally-Add-joystick-LED-ring-support.patch
         0015-hid-asus-ally-initial-Ally-X-gamepad.patch
         0016-hid-asus-ally-initial-gamepad-configuration.patch
@@ -107,7 +106,6 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'b2f8fd486ff94f94ad503d8920a9c4bdd15cd2c7ad17f5ff9fef06d70d59635b'
             '91c9322ee3d41d02d077248ace07841918a1d2454bcb55348afcab69d107619d'
             '371c886fe6228addfbb20ea66ab29b6b24698e8c42e2138dd0534af1821c6e74'
-            '942ecde8e199b4dbdb226fb1f6cedbfe3f933afdd86807968efc3db49a80642b'
             'a20765170c1d6d8db250daa68edb34f539619655676115a2e21f0ff0e40a4cf6'
             '6de8cffbe313944ecb2dc9029a8cea80b90d9688cbd6834922bdddfac9efdd64'
             '8f04cf8dba9cebcbb600c46e07f97ec9354fc7d1c262b411a8cd04034e747d2f'
