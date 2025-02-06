@@ -43,32 +43,35 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # Realtek patch
         0999-patch_realtek.patch
         # ROG ALLY Patches (wip/ally-6.12)
-        0001-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
-        0002-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
-        0003-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
+        0001-Tmp-add-GA605W-H7606W-to-AMD-PMF-quirks.patch
+        0002-hid-asus-Disable-OOBE-mode-on-the-ProArt-P16.patch
+        0003-platform-x86-asus-wmi-Remove-all-ROG-Ally-CSEE-hacks.patch
         0004-platform-x86-asus-wmi-export-symbols-used-for-read-w.patch
-        0005-hid-asus-Add-MODULE_IMPORT_NS-ASUS_WMI.patch
-        0006-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
-        0007-platform-x86-asus-armoury-add-panel_hd_mode-attribut.patch
-        0008-platform-x86-asus-armoury-add-the-ppt_-and-nv_-tunin.patch
-        0009-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
-        0010-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
-        0011-platform-x86-asus-armoury-add-core-count-control.patch
-        0012-platform-x86-asus-wmi-deprecate-bios-features.patch
-        0014-hid-asus-ally-Add-joystick-LED-ring-support.patch
-        0015-hid-asus-ally-initial-Ally-X-gamepad.patch
-        0016-hid-asus-ally-initial-gamepad-configuration.patch
-        0017-hid-asus-ally-add-button-remap-attributes.patch
-        0018-hid-asus-ally-add-gamepad-mode-selection.patch
-        0019-hid-asus-ally-Turbo-settings-for-buttons.patch
-        0020-hid-asus-ally-add-vibration-intensity-settings.patch
-        0021-hid-asus-ally-add-JS-deadzones.patch
-        0022-hid-asus-ally-add-trigger-deadzones.patch
-        0023-hid-asus-ally-add-anti-deadzones.patch
-        0024-hid-asus-ally-add-JS-response-curves.patch
-        0025-hid-asus-ally-add-calibrations-wip.patch
-        0026-debug-by-default.patch
-        0027-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
+        0005-hid-asus-check-ROG-Ally-MCU-version-and-warn.patch
+        0006-asus-wmi-disable-mcu_powersave-if-MCU-version-too-lo.patch
+        0007-hid-asus-ally-Add-joystick-LED-ring-support.patch
+        0008-hid-asus-ally-initial-Ally-X-gamepad.patch
+        0009-hid-asus-ally-initial-gamepad-configuration.patch
+        0010-hid-asus-ally-add-button-remap-attributes.patch
+        0011-hid-asus-ally-add-gamepad-mode-selection.patch
+        0012-hid-asus-ally-Turbo-settings-for-buttons.patch
+        0013-hid-asus-ally-add-vibration-intensity-settings.patch
+        0014-hid-asus-ally-add-JS-deadzones.patch
+        0015-hid-asus-ally-add-trigger-deadzones.patch
+        0016-hid-asus-ally-add-anti-deadzones.patch
+        0017-hid-asus-ally-add-JS-response-curves.patch
+        0018-hid-asus-ally-add-calibrations-wip.patch
+        0019-debug-by-default.patch
+        0020-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
+        0021-platform-x86-asus-armoury-add-panel_hd_mode-attribut.patch
+        0022-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
+        0023-platform-x86-asus-armoury-add-core-count-control.patch
+        0024-platform-x86-asus-wmi-deprecate-bios-features.patch
+        0025-drm-amd-display-Avoid-divide-by-zero-by-initializing.patch
+        0026-platform-x86-asus-armoury-add-the-ppt_-and-nv_-tunin.patch
+        0027-backport-asus-armoury-fix-fw_attributes_class-after-.patch
+        0028-backport-asus-wmi-fix-symbol-ASUS_WMI-after-cherry-p.patch
+        0029-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Zotac Zone patches
@@ -94,31 +97,34 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
-            'dbe849d61f464b1e6addab0f907a24ebd658251f6177ef21c8e19efbd33dcb59'
-            '8561f1318d5b21a396a47c54c0dd03d908518423dd47ab823bb9aa0ff68f4e09'
-            '438f26762b03f622794f52a3c3f9d0ab06f950750ead8a740b96dc78f4a817ea'
-            'e670b962db827eff431c3ac55fea831d0bc60f3cf94479ca2fc6989c4e4a94ec'
-            '368ba0384457f5258ec895b5deb7e2c1efb4954de49e74f2759b0c268623ceaa'
-            '452926b2f36397acacf01093aa20aa10aed3bd5e21fce715662387f9079b707a'
-            '98cb3dbbbb0ed20d172c1e156c47346eeb8c55109f39aec5071c6fe02bfcbf2e'
-            '3daa72402703d8e87f15423090ebb17887374adc5f4d02f8b72ad23dad4ec75a'
-            '87e322b16d777309aa8662ccf1fc5e83b827dbeda68ef477c7ae0577bf11257c'
-            'b2f8fd486ff94f94ad503d8920a9c4bdd15cd2c7ad17f5ff9fef06d70d59635b'
-            '91c9322ee3d41d02d077248ace07841918a1d2454bcb55348afcab69d107619d'
-            '371c886fe6228addfbb20ea66ab29b6b24698e8c42e2138dd0534af1821c6e74'
-            'a20765170c1d6d8db250daa68edb34f539619655676115a2e21f0ff0e40a4cf6'
-            '6de8cffbe313944ecb2dc9029a8cea80b90d9688cbd6834922bdddfac9efdd64'
-            '8f04cf8dba9cebcbb600c46e07f97ec9354fc7d1c262b411a8cd04034e747d2f'
-            '7f8b56ec198f0364bd935da4eb1ba4c125ceab2c61983096b959bc39ec2cb21e'
-            '204a36a2f204934f644d34df3dd7c711d8179e6a133764bacfd857926755f5f1'
-            'f9237f4a87e63c6abeb13a93c883055cfe95b5f7c17190117168d3178836c9ff'
-            'ecaaa922e66444722d006351b6f1d8c96976cdb123795b3ae0a1e561317d1e4d'
-            '4220fed1e994c811e1f905589c7d041255287d023897df62ae5e04e1f3d46d76'
-            '7dbd0e1036df0703b35b99731f673e24e1c6e6d537b3f574e0053feffbf45179'
-            'da78fcb7f0592796d6f284c30de316850ee28b1fb40ed15e7fb1303f94732d73'
-            'ff81b748591723d307fee8670864d9be22d9bffe4e7edb9f98c1c130668102c4'
-            '09283fa299561f7b5f129660bd85f7a98938039ddaec8b178fdb4d640a3deff8'
-            'e537ae0480dc3a70f52a0913a21c43c7e7cde6909c472921af07aeabd92339b5'
+            '5f3d14412b9ea348ad6be2354f1022badc9febe06191e85a228a0c40a84e8f1d'
+            '5b50462a0d3a62c52793a54fea736471e71a5de84ec3a37de616acfecf261c26'
+            'f4dc0ae6cd9fdefe1607a0017c560308177ef2f3e5f178c99aaa12092f4c6566'
+            'cd6d7a2cfffd28fb92bdda134e9f03f3764bb805fe7949e37c16fca64031e163'
+            '999c24f868fcde762ec8b03fef3ea03d8fac5a58a16f5aa02fdcbccf18507168'
+            'a13bb79244a91b4261cee7d45d85e7729f6098699223072f03b7dc36b69acf3d'
+            '314507f5bd9efcca79b72cfdcbda62fedcd851d9161e99d1bfee4875a0a58d8b'
+            '8215c128f5c1a6c17383f647f79db9dc38c9efeea7032c73e8906f1f941c79cb'
+            'a89467290a127d416e6aea2d298576f72a5d50896485a413f046072a6ec62002'
+            '523daeefdbe2b368032f3943e23ff1a7a52da3f8cfb43b33f181023a56162ac4'
+            'b2d1c0068fe1b069f77e8126c7f6d7f14203f9d97779db61e744900bf06eb363'
+            '14044c8a525e59628a42870d181f0feaf1fe2b1331ffe4b9f145368b978a2c70'
+            'a96f8ebdee9b8ce5676ae27cdc4b4b45cd75f5febc00933f07fb8745b637573b'
+            '7bf2336381d7cdd4e3c44bf98650351da2628aeb909c57645bba30961b0a6328'
+            '227528033418f94852bf5bd5387ce072d383056b333a76dc8534f496c751ba1e'
+            '366c02ab50464e30b8d2c0226f6c564e7bf972b97006a37c31df3428279774cb'
+            '88763f2db4de0e30d0ad5bc8e78ba987e98c662928cb68ddb3f2d202bd0e8665'
+            '2f52da9e96926be1395ddfba0fd902f5eb173626960a9ceee2c70c67572494df'
+            '560ef6b4ac29cb1f743b5666119a179e6187fe160765f8a519c45701eda6dd9e'
+            '88682388ebf70ed3bd778314ea9b7606d2275774a7188946759c3b53b41a96ac'
+            'c4d444a07e21ff4e8222041e1d54118374b941ebf17eb539f6538187660dee75'
+            '9c8412256aa4a2763e5b6a642a29926b2488441a204932f5f62cf4c4f43d570b'
+            '80f3d84c0c74449b31a15f33b4e3808d95417bb19bebd5e621ce6df878cac784'
+            'd91ff7d013ffe576711e478d1212894c91ebeee88921ea102adc7d077e601b0c'
+            '5633134cff2f296a1de8656cc80a2dfc0ebd6532903ea4a7b71f8452b5684f3a'
+            'b2e5cdce56aaf1ad7013968189823a1a5663ba50f81e0098ca53cfd7bd6c6332'
+            'eda26710ffe67fc824e0306c54e0d3db1273c8aca2e5e8754f9048fe91850a2d'
+            'b63db26a99071332169209dcc769df0909e311e0f319d456d4f5892bc54998f3'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             '5dabdb1d45f1edd9bfaeebbc4a8767812fae5b4de9866cedecab7bfcf982b8ee'
