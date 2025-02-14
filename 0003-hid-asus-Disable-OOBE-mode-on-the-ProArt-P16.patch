@@ -1,7 +1,7 @@
-From 9380bb0065b66799939cee9266f552bf1643d0f1 Mon Sep 17 00:00:00 2001
+From 41fc63d973db42d1e15c9968c3d00772213fd588 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 6 Jan 2025 11:22:43 +1300
-Subject: [PATCH 02/28] hid-asus: Disable OOBE mode on the ProArt P16
+Subject: [PATCH 03/30] hid-asus: Disable OOBE mode on the ProArt P16
 
 The new ASUS ProArt 16" laptop series come with their keyboards stuck in
 an Out-Of-Box-Experience mode. While in this mode most functions will
