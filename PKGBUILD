@@ -45,7 +45,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # ROG ALLY Patches (wip/ally-6.12)
         0001-drm-amd-display-Avoid-divide-by-zero-by-initializing.patch
         0002-Tmp-add-GA605W-H7606W-to-AMD-PMF-quirks.patch
-        0003-hid-asus-Disable-OOBE-mode-on-the-ProArt-P16.patch
         0004-hid-asus-check-ROG-Ally-MCU-version-and-warn.patch
         0005-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
         0006-hid-asus-set-mcu-hack-to-off-if-required-MCU-version.patch
@@ -95,14 +94,13 @@ fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '9e04283cd033e0c746b54974b05c3585091dd02b46158ae7c6d16ff31de723e5'
-            'e243707747eb111e1579ffc7ae6c1587e4d906303e7d5d38d8c2b1446b99d9bd'
+            'a7c02d3863ce43355f1da17fb5dba8249cac326dee5ff390e3212fbedd2c974f'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
             'c5288dd3057ced81018db254c94fd7ee8dfc5d4687064b5ae234d56f04ad1069'
             'a4ec35907f4d532b45599821a74e7703e21a4df1677a3c057c433d13b31816a4'
-            'f7c35a033dbd5bbb8e39de47c0170fd9aa1c6d20b303b7e549b315dcec5d4fb8'
             'a1c2e372d771b1bd42cb5f1e51718ea2c8af4fa911f4fd640d8d10cbf1e59cb0'
             'ac9c7fbe9db664f933c8153334cacbfc6f25946ea0488800de4ac4e9c93e4dd0'
             '7893450bfae2bba7a1d20d29ad1791cadde32197297acb84bbbed1d952d24052'
