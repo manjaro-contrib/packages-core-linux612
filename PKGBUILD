@@ -81,6 +81,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         aa776ec5fb0ff9f94cb546773e76a248e05084b5.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
+        0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
         0002-steamdeck-oled-audio.patch
 )
 
@@ -134,6 +135,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '5dabdb1d45f1edd9bfaeebbc4a8767812fae5b4de9866cedecab7bfcf982b8ee'
             '4a9d290f020ff88617ecb7c2aa38ecee796dc800b677dd2fa9c8f64797a33aa0'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf'
+            'a972dcd4a29116ba91f85f4dd78be505380f871f144b6e5fcce0c272bbeaed90'
             '17c49b6eb2602d4796b8c47e8e9c30684404f9300d71278475ddf61a4025ca88')
 
 export KBUILD_BUILD_HOST=manjaro
