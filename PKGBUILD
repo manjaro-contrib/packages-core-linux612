@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.20
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -77,7 +77,8 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Zotac Zone patches
-        636de3f2be1d171b50c47b9f038b7a5b19d8667d.patch
+        0001-revert-input-xpad-add-support-for-zotac-gaming-zone.patch
+        0002-drm-panel-orientation-quirks-Add-Zotac-Gaming-Zone-quirk.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -131,7 +132,8 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '5dabdb1d45f1edd9bfaeebbc4a8767812fae5b4de9866cedecab7bfcf982b8ee'
+            '6c3d9fe5f7bae7551a2a99e59a80196d85efb920234f8a7ff214b2a84b032003'
+            'a177c4caddbf2a1e00004b947de72129651440e83983b0adb1e0490e69909f92'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro

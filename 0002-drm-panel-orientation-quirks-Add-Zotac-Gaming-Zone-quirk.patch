@@ -1,16 +1,3 @@
-From 636de3f2be1d171b50c47b9f038b7a5b19d8667d Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 18:04:42 +0100
-Subject: [PATCH] drm: panel-orientation-quirks: Add Zotac Gaming Zone quirk
-
-The Zotac Gaming Zone handheld features a 1080p portrait OLED screen.
-Add the rotation to the panel orientation quirks.
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 index b6b4ff27c8ac60..a44209be1dc2b5 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
