@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.21
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -78,7 +78,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Zotac Zone patches
         c81dc24a977d73475c61702ef15ee534c13b553b.patch
-        915a45bacee3b5e98959af8e1ec997f1c4fa6833.patch
+        0001-revert-input-xpad-add-support-for-zotac-gaming-zone.patch
         0002-drm-panel-orientation-quirks-Add-Zotac-Gaming-Zone-quirk.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
@@ -134,7 +134,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
             '60ad0df61c6647d957bdf63056bc17320d7b6f109254e4150d90410f3ec861e7'
-            '245f6efd5c1e50471e600b1dff6bd2d595af91190590e8fc5ac4c80cf820a061'
+            '6c3d9fe5f7bae7551a2a99e59a80196d85efb920234f8a7ff214b2a84b032003'
             'a177c4caddbf2a1e00004b947de72129651440e83983b0adb1e0490e69909f92'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
