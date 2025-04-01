@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.21
-pkgrel=3
+pkgrel=4
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -49,7 +49,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0005-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
         0006-hid-asus-set-mcu-hack-to-off-if-required-MCU-version.patch
         0007-hid-asus-ally-Add-joystick-LED-ring-support.patch
-        0007-mt7921e_Perform_FLR_to_recovery_the_device.patch
         0008-hid-asus-ally-initial-Ally-X-gamepad.patch
         0009-hid-asus-ally-initial-gamepad-configuration.patch
         0010-hid-asus-ally-add-button-remap-attributes.patch
@@ -107,7 +106,6 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'ac9c7fbe9db664f933c8153334cacbfc6f25946ea0488800de4ac4e9c93e4dd0'
             '7893450bfae2bba7a1d20d29ad1791cadde32197297acb84bbbed1d952d24052'
             '5a5a0f80e76b693f0e06d1644bb81b0f3720fca7e14435fc06ecfaa187380602'
-            'd673d034fbcd80426fd8d9c6af56537c5fe5b55fe49d74e313474d7fc285ecc1'
             '3fac0fb57c769bfef57d71d78d1b5f681947c2146ef30d7a9afdc87805eda058'
             '20e07201d951773ff60b9b4f201bf21386ea3102a80e4a158bbaeb7bc1ae1b45'
             '5b515dc4e43f5e3638a9f09318361c2f26964612df511d54a41149147926c40d'
