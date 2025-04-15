@@ -1,0 +1,30 @@
+From ee5eb1328b28ea9d8b2df24ac21322a6d0da35f0 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Tue, 15 Apr 2025 23:17:03 +1200
+Subject: [PATCH] small fixes to zotac
+
+---
+ drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+index 2321a6fe654dc2..304172e04c396f 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+@@ -113,6 +113,7 @@ static int process_keyboard_report(struct zotac_device *zotac, u8 *data,
+ 
+ 	if (pattern == 0x09006c || pattern == 0x09006d || pattern == 0x080007) {
+ 		data[1] = 0x00;
++		// TODO: change this output depending on qam_mode attribute
+ 		switch (data[3]) {
+ 		case 0x6C:
+ 			zotac_gamepad_send_button(zotac, (int[]){ BTN_MODE },
+@@ -548,7 +549,7 @@ static const struct hid_device_id zotac_devices[] = {
+ MODULE_DEVICE_TABLE(hid, zotac_devices);
+ 
+ static struct hid_driver zotac_driver = {
+-	.name = "hid_zotac_zone",
++	.name = "zotac_zone_hid",
+ 	.id_table = zotac_devices,
+ 	.probe = zotac_probe,
+ 	.remove = zotac_remove,

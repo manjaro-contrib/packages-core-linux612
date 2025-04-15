@@ -76,8 +76,9 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Zotac Zone patches
-        c81dc24a977d73475c61702ef15ee534c13b553b.patch
-        0001-revert-input-xpad-add-support-for-zotac-gaming-zone.patch
+        cfa788acf7c928304acb6e34ddd97b02be327ee7.patch
+        e3386de9484b8d10be1ea8ecae010e0dac802722.patch
+        ee5eb1328b28ea9d8b2df24ac21322a6d0da35f0.patch
         0002-drm-panel-orientation-quirks-Add-Zotac-Gaming-Zone-quirk.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
@@ -131,8 +132,9 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '60ad0df61c6647d957bdf63056bc17320d7b6f109254e4150d90410f3ec861e7'
-            '6c3d9fe5f7bae7551a2a99e59a80196d85efb920234f8a7ff214b2a84b032003'
+            '24d291be179dc35ab15368c193c8e66dd0cd587440e66bd5bff505b430332cb6'
+            '2188a7fcd46bbe718a6d1efd87d9860c14edaedf6bb550a741df4ff81e18cb0f'
+            'fd9a126ac8c5f4251428fa3f684a1043e0e8a6a4b2929c52909e01b85db3b279'
             'a177c4caddbf2a1e00004b947de72129651440e83983b0adb1e0490e69909f92'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
