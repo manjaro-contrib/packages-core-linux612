@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.23
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -79,6 +79,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         cfa788acf7c928304acb6e34ddd97b02be327ee7.patch
         e3386de9484b8d10be1ea8ecae010e0dac802722.patch
         ee5eb1328b28ea9d8b2df24ac21322a6d0da35f0.patch
+        8c82fdb9b04ef1b3e8adbce2d4d937f431d55e21.patch
         0002-drm-panel-orientation-quirks-Add-Zotac-Gaming-Zone-quirk.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
@@ -135,6 +136,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '24d291be179dc35ab15368c193c8e66dd0cd587440e66bd5bff505b430332cb6'
             '2188a7fcd46bbe718a6d1efd87d9860c14edaedf6bb550a741df4ff81e18cb0f'
             'fd9a126ac8c5f4251428fa3f684a1043e0e8a6a4b2929c52909e01b85db3b279'
+            'd43b4b5e55b47fb855855d4ece2e19385312872e4f9e234589692fc9508ded2e'
             'a177c4caddbf2a1e00004b947de72129651440e83983b0adb1e0490e69909f92'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 

@@ -1,0 +1,145 @@
+From 8c82fdb9b04ef1b3e8adbce2d4d937f431d55e21 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Wed, 16 Apr 2025 19:39:36 +1200
+Subject: [PATCH] add qam_mode sys attr
+
+---
+ .../zotac-zone-hid/zotac-zone-hid-config.c    | 34 +++++++++++++++++++
+ .../hid/zotac-zone-hid/zotac-zone-hid-core.c  | 24 +++++++++----
+ .../hid/zotac-zone-hid/zotac-zone-hid-input.c |  9 +++++
+ drivers/hid/zotac-zone-hid/zotac-zone.h       |  2 ++
+ 4 files changed, 63 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
+index 6ac24be107b9b6..bb01ce902b9c73 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
+@@ -1928,8 +1928,42 @@ static ssize_t save_config_store(struct device *dev,
+ }
+ static DEVICE_ATTR_WO(save_config);
+ 
++static ssize_t qam_mode_show(struct device *dev, struct device_attribute *attr,
++			     char *buf)
++{
++	struct hid_device *hdev = to_hid_device(dev);
++	struct zotac_device *zotac = hid_get_drvdata(hdev);
++
++	if (!zotac || !zotac->gamepad)
++		return -ENODEV;
++
++	return sprintf(buf, "%d\n", zotac->gamepad->qam_mode ? 1 : 0);
++}
++
++static ssize_t qam_mode_store(struct device *dev, struct device_attribute *attr,
++			      const char *buf, size_t count)
++{
++	struct hid_device *hdev = to_hid_device(dev);
++	struct zotac_device *zotac = hid_get_drvdata(hdev);
++	bool value;
++	int ret;
++
++	if (!zotac || !zotac->gamepad)
++		return -ENODEV;
++
++	ret = kstrtobool(buf, &value);
++	if (ret)
++		return ret;
++
++	zotac->gamepad->qam_mode = value;
++
++	return count;
++}
++DEVICE_ATTR_RW(qam_mode);
++
+ static struct attribute *zotac_root_attrs[] = {
+ 	&dev_attr_save_config.attr,
++	&dev_attr_qam_mode.attr,
+ 	&dev_attr_vibration_intensity.attr,
+ 	&dev_attr_vibration_intensity_index.attr,
+ 	&dev_attr_mouse_speed.attr,
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+index 304172e04c396f..aea0bb95e35c6c 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+@@ -105,6 +105,10 @@ static int process_keyboard_report(struct zotac_device *zotac, u8 *data,
+ 				   int size)
+ {
+ 	u32 pattern;
++	bool qam_mode = true;
++
++	if (zotac->gamepad)
++		qam_mode = zotac->gamepad->qam_mode;
+ 
+ 	if (size < 5)
+ 		return 0;
+@@ -116,16 +120,24 @@ static int process_keyboard_report(struct zotac_device *zotac, u8 *data,
+ 		// TODO: change this output depending on qam_mode attribute
+ 		switch (data[3]) {
+ 		case 0x6C:
+-			zotac_gamepad_send_button(zotac, (int[]){ BTN_MODE },
+-						  1);
++			if (qam_mode)
++				zotac_gamepad_send_button(zotac, (int[]){ BTN_MODE }, 1);
++			else
++				zotac_gamepad_send_button(zotac, (int[]){ KEY_F15 }, 1);
+ 			break;
+ 		case 0x6D:
+-			zotac_gamepad_send_button(
+-				zotac, (int[]){ BTN_MODE, BTN_A }, 2);
++			if (qam_mode)
++				zotac_gamepad_send_button(
++					zotac, (int[]){ BTN_MODE, BTN_A }, 2);
++			else
++				zotac_gamepad_send_button(zotac, (int[]){ KEY_F16 }, 1);
+ 			break;
+ 		case 0x07:
+-			zotac_gamepad_send_button(
+-				zotac, (int[]){ BTN_MODE, BTN_X }, 2);
++			if (qam_mode)
++				zotac_gamepad_send_button(
++					zotac, (int[]){ BTN_MODE, BTN_X }, 2);
++			else
++				zotac_gamepad_send_button(zotac, (int[]){ KEY_F17 }, 1);
+ 			break;
+ 		}
+ 		memset(data, 0, size);
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c
+index 85afd5dea9e6c3..41e537db46540f 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c
+@@ -302,6 +302,7 @@ int zotac_init_gamepad(struct zotac_device *zotac, struct usb_interface *intf)
+ 		goto err_free_gamepad;
+ 	}
+ 
++	gamepad->qam_mode = true;
+ 	gamepad->ep_in = ep_in;
+ 	gamepad->ep_out = ep_out;
+ 
+@@ -335,6 +336,14 @@ int zotac_init_gamepad(struct zotac_device *zotac, struct usb_interface *intf)
+ 	input_set_capability(input_dev, EV_KEY, BTN_THUMBL);
+ 	input_set_capability(input_dev, EV_KEY, BTN_THUMBR);
+ 
++	/* Allow the gamepad to emit these events for screenface buttons */
++	input_set_capability(input_dev, EV_KEY, KEY_F15);
++	input_set_capability(input_dev, EV_KEY, KEY_F16);
++	input_set_capability(input_dev, EV_KEY, KEY_F17);
++	input_set_capability(input_dev, EV_KEY, KEY_F18);
++	input_set_capability(input_dev, EV_KEY, KEY_F19);
++	input_set_capability(input_dev, EV_KEY, KEY_F20);
++
+ 	pipe = usb_rcvintpipe(udev, gamepad->ep_in->bEndpointAddress);
+ 	if (!(maxp = usb_maxpacket(udev, pipe))) {
+ 		ret = -EINVAL;
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone.h b/drivers/hid/zotac-zone-hid/zotac-zone.h
+index 77c9d5594fcfc0..a657b8c1515c43 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone.h
++++ b/drivers/hid/zotac-zone-hid/zotac-zone.h
+@@ -89,6 +89,8 @@ struct zotac_gamepad {
+ 	unsigned int button_to_press;
+ 	unsigned int button_to_press2;
+ 	bool update_qam;
++	/* True if Steam chords should be enabled */
++	bool qam_mode;
+ };
+ 
+ struct zotac_rgb_dev {
