@@ -83,6 +83,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0005-add-qam_mode-sys-attr.patch
         0006-test-global-static-for-zone-base.patch
         0007-Test-a-remap.patch
+        0008-Test-catch-ctrl-alt-del.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -135,13 +136,14 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '70e4981d6199e9be542fd520443f1d48c8b4460a3d528d83a7ae36e1dbf5aef1'
-            '41e005160a45b8f72cf7a4dad6977be35cc6bdc66eb8f62bac84808d1169858d'
-            '4f6a0ad89aaa994ea43ccb12577caf3d9f34918a7bdbaddf0f15fa74e589b728'
-            '7525015736449fb0e079eb0385c6e57e3cc7369e5c97e82c0f43cea22f9b9a3c'
-            'd44390d6ce5d04c334e5f4e99634aa475314e5d22ab5af3718c7cb2bbabd3ef6'
-            'd81602149842920eb66d0262992785c804d2e675a8f3dca0225f9f317d6801b2'
-            '39dfdaa546b8389e2ab8eed83e592b24310d56497254004faa1a4571a8da3f7a'
+            '76e10e85a62465a90f56ea523a0d033550e8f1ad4df18b7a2f42bbb47ed1665e'
+            '715a8ef4ce16c5add7d923f1458f491c3b29644b0a41a765f874784a76fa7acc'
+            '0830275c1c487c871e95d42d73b0f062b1b41f17aed566fe928cb08071fbdec1'
+            '03c6f2749a6f528fbe7858cbabb67ee82f36b6d309c083106a9e17d8710fc754'
+            '497e79339bd106c5a6a8144d655a279e212a806f44ce0e486bb15586c524104a'
+            '476432b1cc94ea930a0843d878d89aa3a0a47bac3adc48be537e66bb86b143a5'
+            'ba17455941c969dd4310eb40d4dfb57036906887d3b3288510094b63ed7508ee'
+            '5c8094d4a1b64bbd791cfb48ff2d63c48286a6b8bf340e7392281552d124e63a'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro

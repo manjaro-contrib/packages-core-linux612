@@ -1,7 +1,7 @@
 From ee5eb1328b28ea9d8b2df24ac21322a6d0da35f0 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Tue, 15 Apr 2025 23:17:03 +1200
-Subject: [PATCH 4/7] small fixes to zotac
+Subject: [PATCH 4/8] small fixes to zotac
 
 ---
  drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c | 3 ++-

@@ -1,0 +1,38 @@
+From cae067e30ebb05f45ece8793c0833471085bb483 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Thu, 17 Apr 2025 23:03:55 +1200
+Subject: [PATCH 8/8] Test catch ctrl-alt-del
+
+---
+ drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+index 1321e815d328..ef31c9d7aa07 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+@@ -115,10 +115,20 @@ static int process_keyboard_report(struct zotac_device *zotac, u8 *data,
+ 	if (size < 5)
+ 		return 0;
+ 
++	// 02 05 00 63 00 00 00 00 == long press of home
+ 	pattern = (data[1] << 16) | (data[2] << 8) | data[3];
+ 
+-	if (pattern == 0x09006c || pattern == 0x09006d || pattern == 0x080007) {
++	if (pattern == 0x09006c || pattern == 0x09006d || pattern == 0x080007
++	    || pattern == 0x050063 ) {
+ 		switch (data[3]) {
++		case 0x63:
++			if (qam_mode)
++				zotac_gamepad_send_button(
++					zotac, (int[]){ BTN_MODE, BTN_X }, 2);
++			else
++				data[3] = HID_USAGE_F19;
++				// zotac_gamepad_send_button(zotac, (int[]){ KEY_F19 }, 1);
++			break;
+ 		case 0x6C:
+ 			if (qam_mode)
+ 				zotac_gamepad_send_button(zotac, (int[]){ BTN_MODE }, 1);
+-- 
+2.49.0
+

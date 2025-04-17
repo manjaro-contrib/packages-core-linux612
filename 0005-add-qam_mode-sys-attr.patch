@@ -1,7 +1,7 @@
 From 7f80492a65579815f58da1b6463233cf61f9fbc8 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Wed, 16 Apr 2025 19:39:36 +1200
-Subject: [PATCH 5/7] add qam_mode sys attr
+Subject: [PATCH 5/8] add qam_mode sys attr
 
 ---
  .../zotac-zone-hid/zotac-zone-hid-config.c    | 32 +++++++++++++++++++
