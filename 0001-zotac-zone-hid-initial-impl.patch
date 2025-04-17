@@ -1,7 +1,7 @@
 From cfa788acf7c928304acb6e34ddd97b02be327ee7 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Wed, 5 Mar 2025 17:40:54 +1300
-Subject: [PATCH] zotac-zone-hid: initial impl
+Subject: [PATCH 1/7] zotac-zone-hid: initial impl
 
 The full base driver for HID and platform is implemented.
 This now requires splitting in to base commits for upstreaming.
@@ -32,7 +32,7 @@ Signed-off-by: Luke Jones <luke@ljones.dev>
  create mode 100644 drivers/platform/x86/zotac-zone-platform.c
 
 diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index dfc245867a46ac..c514e23f92e57e 100644
+index dfc245867a46..c514e23f92e5 100644
 --- a/drivers/hid/Kconfig
 +++ b/drivers/hid/Kconfig
 @@ -1393,4 +1393,6 @@ endif # HID
@@ -43,7 +43,7 @@ index dfc245867a46ac..c514e23f92e57e 100644
 +
  endif # HID_SUPPORT
 diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index 0abfe51704a0b4..8f34a20a422cfb 100644
+index 0abfe51704a0..8f34a20a422c 100644
 --- a/drivers/hid/Makefile
 +++ b/drivers/hid/Makefile
 @@ -169,6 +169,8 @@ obj-$(CONFIG_INTEL_ISH_HID)	+= intel-ish-hid/
@@ -56,7 +56,7 @@ index 0abfe51704a0b4..8f34a20a422cfb 100644
  
  obj-$(CONFIG_INTEL_THC_HID)     += intel-thc-hid/
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 7e400624908e30..9fb83ebd92247f 100644
+index 7e400624908e..9fb83ebd9224 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
 @@ -1451,6 +1451,10 @@
@@ -72,7 +72,7 @@ index 7e400624908e30..9fb83ebd92247f 100644
  #define USB_DEVICE_ID_PRIMAX_MOUSE_4E2A	0x4e2a
 diff --git a/drivers/hid/zotac-zone-hid/Kconfig b/drivers/hid/zotac-zone-hid/Kconfig
 new file mode 100644
-index 00000000000000..89fb2ac080bb0f
+index 000000000000..89fb2ac080bb
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/Kconfig
 @@ -0,0 +1,8 @@
@@ -86,7 +86,7 @@ index 00000000000000..89fb2ac080bb0f
 +	Support for the Zotac Zone handheld gaming console.
 diff --git a/drivers/hid/zotac-zone-hid/Makefile b/drivers/hid/zotac-zone-hid/Makefile
 new file mode 100644
-index 00000000000000..2f7053b981ac00
+index 000000000000..2f7053b981ac
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/Makefile
 @@ -0,0 +1,6 @@
@@ -98,7 +98,7 @@ index 00000000000000..2f7053b981ac00
 +obj-$(CONFIG_ZOTAC_ZONE_HID) := zotac-zone-hid.o
 diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
 new file mode 100644
-index 00000000000000..6ac24be107b9b6
+index 000000000000..6ac24be107b9
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
 @@ -0,0 +1,2232 @@
@@ -2336,7 +2336,7 @@ index 00000000000000..6ac24be107b9b6
 +}
 diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
 new file mode 100644
-index 00000000000000..2321a6fe654dc2
+index 000000000000..2321a6fe654d
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
 @@ -0,0 +1,567 @@
@@ -2909,7 +2909,7 @@ index 00000000000000..2321a6fe654dc2
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c
 new file mode 100644
-index 00000000000000..85afd5dea9e6c3
+index 000000000000..85afd5dea9e6
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-input.c
 @@ -0,0 +1,505 @@
@@ -3420,7 +3420,7 @@ index 00000000000000..85afd5dea9e6c3
 +}
 diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-rgb.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-rgb.c
 new file mode 100644
-index 00000000000000..3f5b35132a9d61
+index 000000000000..3f5b35132a9d
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-rgb.c
 @@ -0,0 +1,730 @@
@@ -4156,7 +4156,7 @@ index 00000000000000..3f5b35132a9d61
 +}
 diff --git a/drivers/hid/zotac-zone-hid/zotac-zone.h b/drivers/hid/zotac-zone-hid/zotac-zone.h
 new file mode 100644
-index 00000000000000..77c9d5594fcfc0
+index 000000000000..77c9d5594fcf
 --- /dev/null
 +++ b/drivers/hid/zotac-zone-hid/zotac-zone.h
 @@ -0,0 +1,205 @@
@@ -4366,7 +4366,7 @@ index 00000000000000..77c9d5594fcfc0
 +
 +#endif /* __HID_ZOTAC_ZONE_H */
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 7edab99d3ae9d1..6c09e343416980 100644
+index 7edab99d3ae9..6c09e3434169 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -1209,6 +1209,14 @@ config SEL3350_PLATFORM
@@ -4385,7 +4385,7 @@ index 7edab99d3ae9d1..6c09e343416980 100644
  
  config P2SB
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index fe3e7e7dede8f8..6ba0bf65069fd3 100644
+index fe3e7e7dede8..6ba0bf65069f 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -154,3 +154,5 @@ obj-$(CONFIG_WINMATE_FM07_KEYS)		+= winmate-fm07-keys.o
@@ -4396,7 +4396,7 @@ index fe3e7e7dede8f8..6ba0bf65069fd3 100644
 +obj-$(CONFIG_ZOTAC_ZONE_PLATFORM)		+= zotac-zone-platform.o
 diff --git a/drivers/platform/x86/zotac-zone-platform.c b/drivers/platform/x86/zotac-zone-platform.c
 new file mode 100644
-index 00000000000000..4723dd5680d537
+index 000000000000..4723dd5680d5
 --- /dev/null
 +++ b/drivers/platform/x86/zotac-zone-platform.c
 @@ -0,0 +1,599 @@
@@ -4999,3 +4999,6 @@ index 00000000000000..4723dd5680d537
 +MODULE_AUTHOR("Luke D. Jones");
 +MODULE_DESCRIPTION("Zotac Handheld Platform Driver");
 +MODULE_LICENSE("GPL");
+-- 
+2.49.0
+

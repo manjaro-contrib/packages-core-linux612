@@ -1,0 +1,63 @@
+From 75241d718b0c443efbde3298e2966b92cb2ade80 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Thu, 17 Apr 2025 21:31:39 +1200
+Subject: [PATCH 7/7] Test a remap
+
+---
+ .../hid/zotac-zone-hid/zotac-zone-hid-core.c  | 22 ++++++++++++-------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+index c9c65e88ba16..1321e815d328 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+@@ -118,32 +118,38 @@ static int process_keyboard_report(struct zotac_device *zotac, u8 *data,
+ 	pattern = (data[1] << 16) | (data[2] << 8) | data[3];
+ 
+ 	if (pattern == 0x09006c || pattern == 0x09006d || pattern == 0x080007) {
+-		data[1] = 0x00;
+-		// TODO: change this output depending on qam_mode attribute
+ 		switch (data[3]) {
+ 		case 0x6C:
+ 			if (qam_mode)
+ 				zotac_gamepad_send_button(zotac, (int[]){ BTN_MODE }, 1);
+ 			else
+-				zotac_gamepad_send_button(zotac, (int[]){ KEY_F15 }, 1);
++				data[3] = HID_USAGE_F16;
++				// zotac_gamepad_send_button(zotac, (int[]){ KEY_F15 }, 1);
+ 			break;
+ 		case 0x6D:
+ 			if (qam_mode)
+ 				zotac_gamepad_send_button(
+ 					zotac, (int[]){ BTN_MODE, BTN_A }, 2);
+ 			else
+-				zotac_gamepad_send_button(zotac, (int[]){ KEY_F16 }, 1);
++				data[3] = HID_USAGE_F17;
++				// zotac_gamepad_send_button(zotac, (int[]){ KEY_F16 }, 1);
+ 			break;
+ 		case 0x07:
+ 			if (qam_mode)
+ 				zotac_gamepad_send_button(
+-					zotac, (int[]){ BTN_MODE, BTN_X }, 2);
++					zotac, (int[]){ BTN_MODE, BTN_B }, 2);
+ 			else
+-				zotac_gamepad_send_button(zotac, (int[]){ KEY_F17 }, 1);
++				data[3] = HID_USAGE_F18;
++				// zotac_gamepad_send_button(zotac, (int[]){ KEY_F17 }, 1);
+ 			break;
+ 		}
+-		memset(data, 0, size);
+-		return 1;
++		if (qam_mode) {
++			memset(data, 0, size);
++			return 1;
++		} else {
++			data[1] = 0;
++			return 0;
++		}
+ 	}
+ 	return 0;
+ }
+-- 
+2.49.0
+

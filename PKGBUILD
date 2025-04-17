@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.23
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -76,11 +76,13 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
         # Zotac Zone patches
-        cfa788acf7c928304acb6e34ddd97b02be327ee7.patch
-        e3386de9484b8d10be1ea8ecae010e0dac802722.patch
-        ee5eb1328b28ea9d8b2df24ac21322a6d0da35f0.patch
-        8c82fdb9b04ef1b3e8adbce2d4d937f431d55e21.patch
-        0002-drm-panel-orientation-quirks-Add-Zotac-Gaming-Zone-quirk.patch
+        0001-zotac-zone-hid-initial-impl.patch
+        0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
+        0003-tmp-apply-zotac-screen-quirk.patch
+        0004-small-fixes-to-zotac.patch
+        0005-add-qam_mode-sys-attr.patch
+        0006-test-global-static-for-zone-base.patch
+        0007-Test-a-remap.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -133,11 +135,13 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '24d291be179dc35ab15368c193c8e66dd0cd587440e66bd5bff505b430332cb6'
-            '2188a7fcd46bbe718a6d1efd87d9860c14edaedf6bb550a741df4ff81e18cb0f'
-            'fd9a126ac8c5f4251428fa3f684a1043e0e8a6a4b2929c52909e01b85db3b279'
-            'd43b4b5e55b47fb855855d4ece2e19385312872e4f9e234589692fc9508ded2e'
-            'a177c4caddbf2a1e00004b947de72129651440e83983b0adb1e0490e69909f92'
+            '70e4981d6199e9be542fd520443f1d48c8b4460a3d528d83a7ae36e1dbf5aef1'
+            '41e005160a45b8f72cf7a4dad6977be35cc6bdc66eb8f62bac84808d1169858d'
+            '4f6a0ad89aaa994ea43ccb12577caf3d9f34918a7bdbaddf0f15fa74e589b728'
+            '7525015736449fb0e079eb0385c6e57e3cc7369e5c97e82c0f43cea22f9b9a3c'
+            'd44390d6ce5d04c334e5f4e99634aa475314e5d22ab5af3718c7cb2bbabd3ef6'
+            'd81602149842920eb66d0262992785c804d2e675a8f3dca0225f9f317d6801b2'
+            '39dfdaa546b8389e2ab8eed83e592b24310d56497254004faa1a4571a8da3f7a'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro

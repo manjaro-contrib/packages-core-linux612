@@ -1,0 +1,747 @@
+From f52897af0ae1be7718cbf697009c66035f3eae25 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Thu, 17 Apr 2025 20:54:09 +1200
+Subject: [PATCH 6/7] test global static for zone base
+
+---
+ .../zotac-zone-hid/zotac-zone-hid-config.c    | 120 +++++++-----------
+ .../hid/zotac-zone-hid/zotac-zone-hid-core.c  |  84 ++++++------
+ drivers/hid/zotac-zone-hid/zotac-zone.h       |   1 +
+ 3 files changed, 84 insertions(+), 121 deletions(-)
+
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
+index 85ba7493cf5b..e47858a3fab9 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-config.c
+@@ -383,7 +383,7 @@ static int zotac_send_command_raw(struct zotac_device *zotac, u8 cmd_code,
+ 	u8 *buffer;
+ 	u16 crc;
+ 
+-	if (!zotac || !zotac->cfg_data || !zotac->hdev)
++	if (!zotac->cfg_data || !zotac->hdev)
+ 		return -ENODEV;
+ 
+ 	cfg = zotac->cfg_data;
+@@ -725,16 +725,15 @@ static void zotac_modifier_value_to_names(u8 modifiers, char *buf,
+ static ssize_t gamepad_show(struct device *dev, struct device_attribute *attr,
+ 			    char *buf, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	bool found = false;
+ 	char *p = buf;
+ 
+ 	u8 *mapping_bytes;
+ 	int i;
+ 
+-	if (zotac_get_button_mapping(zotac, button_id) < 0)
++	if (zotac_get_button_mapping(&zotac, button_id) < 0)
+ 		return -EIO;
+ 
+ 	mapping_bytes = (u8 *)&mapping->target_gamepad_buttons;
+@@ -758,9 +757,8 @@ static ssize_t gamepad_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t gamepad_store(struct device *dev, struct device_attribute *attr,
+ 			     const char *buf, size_t count, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	u8 *mapping_bytes = (u8 *)&mapping->target_gamepad_buttons;
+ 	char *buffer, *token, *cursor;
+ 	bool any_valid = false;
+@@ -795,15 +793,14 @@ static ssize_t gamepad_store(struct device *dev, struct device_attribute *attr,
+ 	if (!any_valid)
+ 		return -EINVAL;
+ 
+-	return zotac_set_button_mapping(zotac, button_id) ? -EIO : count;
++	return zotac_set_button_mapping(&zotac, button_id) ? -EIO : count;
+ }
+ 
+ static ssize_t modifier_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	u8 modifiers;
+ 
+ 	modifiers = mapping->target_modifier_keys;
+@@ -816,9 +813,8 @@ static ssize_t modifier_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t modifier_store(struct device *dev, struct device_attribute *attr,
+ 			      const char *buf, size_t count, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	char *buffer, *token, *cursor;
+ 	u8 new_modifiers = 0;
+ 	bool any_valid = false;
+@@ -855,7 +851,7 @@ static ssize_t modifier_store(struct device *dev, struct device_attribute *attr,
+ 
+ 	mapping->target_modifier_keys = new_modifiers;
+ 
+-	return zotac_set_button_mapping(zotac, button_id) ? -EIO : count;
++	return zotac_set_button_mapping(&zotac, button_id) ? -EIO : count;
+ }
+ 
+ static u8 find_key_code_by_name(const char *name)
+@@ -882,14 +878,13 @@ static ssize_t keyboard_keys_show(struct device *dev,
+ 				  struct device_attribute *attr, char *buf,
+ 				  u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	bool any_key = false;
+ 	char *p = buf;
+ 	int i;
+ 
+-	if (zotac_get_button_mapping(zotac, button_id) < 0)
++	if (zotac_get_button_mapping(&zotac, button_id) < 0)
+ 		return -EIO;
+ 
+ 	/* Check each key code in the mapping */
+@@ -914,9 +909,8 @@ static ssize_t keyboard_keys_store(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   const char *buf, size_t count, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	u8 new_keys[BTN_MAP_KEYBOARD_SIZE] = { 0 };
+ 	bool any_valid = false;
+ 	int key_count = 0;
+@@ -954,7 +948,7 @@ static ssize_t keyboard_keys_store(struct device *dev,
+ 
+ 	memcpy(mapping->target_keyboard_keys, new_keys, BTN_MAP_KEYBOARD_SIZE);
+ 
+-	return zotac_set_button_mapping(zotac, button_id) ? -EIO : count;
++	return zotac_set_button_mapping(&zotac, button_id) ? -EIO : count;
+ }
+ 
+ static ssize_t keyboard_list_show(struct device *dev,
+@@ -989,15 +983,14 @@ static ssize_t mouse_buttons_show(struct device *dev,
+ 				  struct device_attribute *attr, char *buf,
+ 				  u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	u8 mouse_buttons = mapping->target_mouse_buttons;
+ 	bool found = false;
+ 	char *p = buf;
+ 	int i;
+ 
+-	if (zotac_get_button_mapping(zotac, button_id) < 0)
++	if (zotac_get_button_mapping(&zotac, button_id) < 0)
+ 		return -EIO;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(mouse_button_names); i++) {
+@@ -1020,9 +1013,8 @@ static ssize_t mouse_buttons_store(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   const char *buf, size_t count, u8 button_id)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct button_mapping *mapping =
+-		&zotac->cfg_data->button_mappings[button_id];
++		&zotac.cfg_data->button_mappings[button_id];
+ 	char *buffer, *token, *cursor;
+ 	u8 new_mouse_buttons = 0;
+ 	bool any_valid = false;
+@@ -1061,7 +1053,7 @@ static ssize_t mouse_buttons_store(struct device *dev,
+ 
+ 	mapping->target_mouse_buttons = new_mouse_buttons;
+ 
+-	return zotac_set_button_mapping(zotac, button_id) ? -EIO : count;
++	return zotac_set_button_mapping(&zotac, button_id) ? -EIO : count;
+ }
+ 
+ static ssize_t mouse_list_show(struct device *dev,
+@@ -1256,15 +1248,14 @@ static ssize_t button_turbo_show(struct device *dev,
+ 				 struct device_attribute *attr, char *buf,
+ 				 int btn_pos)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	u8 turbo_val;
+ 	int ret;
+ 
+-	ret = zotac_get_button_turbo(zotac);
++	ret = zotac_get_button_turbo(&zotac);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	turbo_val = (zotac->cfg_data->button_turbo >> btn_pos) & 0x01;
++	turbo_val = (zotac.cfg_data->button_turbo >> btn_pos) & 0x01;
+ 	return sprintf(buf, "%d\n", turbo_val);
+ }
+ 
+@@ -1272,7 +1263,6 @@ static ssize_t button_turbo_store(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count, int btn_pos)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	u8 turbo_byte;
+ 	int val, ret;
+ 
+@@ -1283,18 +1273,18 @@ static ssize_t button_turbo_store(struct device *dev,
+ 	if (val != 0 && val != 1)
+ 		return -EINVAL;
+ 
+-	ret = zotac_get_button_turbo(zotac);
++	ret = zotac_get_button_turbo(&zotac);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	turbo_byte = zotac->cfg_data->button_turbo;
++	turbo_byte = zotac.cfg_data->button_turbo;
+ 
+ 	if (val)
+ 		turbo_byte |= (1 << btn_pos);
+ 	else
+ 		turbo_byte &= ~(1 << btn_pos);
+ 
+-	ret = zotac_set_button_turbo(zotac, turbo_byte);
++	ret = zotac_set_button_turbo(&zotac, turbo_byte);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1467,9 +1457,8 @@ static ssize_t curve_response_show(struct device *dev,
+ 				   struct device_attribute *attr, char *buf,
+ 				   int stick_num, int point_index)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct stick_sensitivity *sensitivity =
+-		get_sensitivity_for_stick(zotac, stick_num);
++		get_sensitivity_for_stick(&zotac, stick_num);
+ 	int base_idx = point_index * 2;
+ 
+ 	// Dev input is 0-255, but it outputs 0-100. So we store as 0-255
+@@ -1484,9 +1473,8 @@ static ssize_t curve_response_store(struct device *dev,
+ 				    const char *buf, size_t count,
+ 				    int stick_num, int point_index)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	struct stick_sensitivity *sensitivity =
+-		get_sensitivity_for_stick(zotac, stick_num);
++		get_sensitivity_for_stick(&zotac, stick_num);
+ 	u8 data[STICK_SENSITIVITY_SIZE + 1]; // +1 for stick ID
+ 	int base_idx = point_index * 2;
+ 
+@@ -1508,7 +1496,7 @@ static ssize_t curve_response_store(struct device *dev,
+ 	memcpy(&data[STICK_SENSITIVITY_DATA_IDX], sensitivity->values,
+ 	       STICK_SENSITIVITY_SIZE);
+ 
+-	ret = zotac_send_set_command(zotac, CMD_SET_STICK_SENSITIVITY, 0, data,
++	ret = zotac_send_set_command(&zotac, CMD_SET_STICK_SENSITIVITY, 0, data,
+ 				     sizeof(data));
+ 	if (ret < 0)
+ 		return ret;
+@@ -1582,8 +1570,7 @@ static ssize_t axis_xyz_deadzone_store(struct device *dev,
+ 				       const char *buf, size_t count,
+ 				       struct deadzone *dz)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+-	struct zotac_cfg_data *cfg = zotac->cfg_data;
++	struct zotac_cfg_data *cfg = zotac.cfg_data;
+ 	int inner, outer;
+ 	u8 cmd_code;
+ 	int ret;
+@@ -1601,11 +1588,11 @@ static ssize_t axis_xyz_deadzone_store(struct device *dev,
+ 	/* Determine which command to use based on which deadzone is being modified */
+ 	if (dz == &cfg->ls_dz || dz == &cfg->rs_dz) {
+ 		cmd_code = CMD_SET_STICK_DEADZONES;
+-		ret = zotac_apply_deadzones(zotac, &cfg->ls_dz, &cfg->rs_dz,
++		ret = zotac_apply_deadzones(&zotac, &cfg->ls_dz, &cfg->rs_dz,
+ 					    cmd_code);
+ 	} else {
+ 		cmd_code = CMD_SET_TRIGGER_DEADZONES;
+-		ret = zotac_apply_deadzones(zotac, &cfg->lt_dz, &cfg->rt_dz,
++		ret = zotac_apply_deadzones(&zotac, &cfg->lt_dz, &cfg->rt_dz,
+ 					    cmd_code);
+ 	}
+ 
+@@ -1619,18 +1606,16 @@ static ssize_t axis_xyz_deadzone_store(struct device *dev,
+ 	static ssize_t axis_##axis_name##_deadzone_show(                      \
+ 		struct device *dev, struct device_attribute *attr, char *buf) \
+ 	{                                                                     \
+-		struct zotac_device *zotac = dev_get_drvdata(dev);            \
+ 		return axis_xyz_deadzone_show(dev, attr, buf,                 \
+-					      &zotac->cfg_data->dz_field);    \
++					      &zotac.cfg_data->dz_field);    \
+ 	}                                                                     \
+                                                                               \
+ 	static ssize_t axis_##axis_name##_deadzone_store(                     \
+ 		struct device *dev, struct device_attribute *attr,            \
+ 		const char *buf, size_t count)                                \
+ 	{                                                                     \
+-		struct zotac_device *zotac = dev_get_drvdata(dev);            \
+ 		return axis_xyz_deadzone_store(dev, attr, buf, count,         \
+-					       &zotac->cfg_data->dz_field);   \
++					       &zotac.cfg_data->dz_field);   \
+ 	}                                                                     \
+ 	static DEVICE_ATTR_RW_NAMED(axis_##axis_name##_deadzone, "deadzone");
+ 
+@@ -1685,18 +1670,17 @@ static ssize_t vibration_intensity_show(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	u8 data[VIB_RESPONSE_SIZE];
+ 	size_t data_len = sizeof(data);
+ 	int ret;
+ 
+-	ret = zotac_send_get_command(zotac, CMD_GET_VIBRATION_STRENGTH, 0, NULL,
++	ret = zotac_send_get_command(&zotac, CMD_GET_VIBRATION_STRENGTH, 0, NULL,
+ 				     0, data, &data_len);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	if (data_len < VIB_RESPONSE_SIZE) {
+-		dev_err(&zotac->hdev->dev,
++		dev_err(&zotac.hdev->dev,
+ 			"Incomplete vibration data received: %zu bytes\n",
+ 			data_len);
+ 		return -EIO;
+@@ -1711,7 +1695,6 @@ static ssize_t vibration_intensity_store(struct device *dev,
+ 					 struct device_attribute *attr,
+ 					 const char *buf, size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	u8 data[VIB_RESPONSE_SIZE];
+ 	int lt, rt, lr, rr;
+ 	int ret;
+@@ -1725,7 +1708,7 @@ static ssize_t vibration_intensity_store(struct device *dev,
+ 	data[VIB_LEFT_RUMBLE_IDX] = clamp_val(lr, 0, 100);
+ 	data[VIB_RIGHT_RUMBLE_IDX] = clamp_val(rr, 0, 100);
+ 
+-	ret = zotac_send_set_command(zotac, CMD_SET_VIBRATION_STRENGTH, 0, data,
++	ret = zotac_send_set_command(&zotac, CMD_SET_VIBRATION_STRENGTH, 0, data,
+ 				     sizeof(data));
+ 	if (ret < 0)
+ 		return ret;
+@@ -1744,10 +1727,9 @@ static DEVICE_ATTR_RO_NAMED(mouse_speed_max, "mouse_speed_max");
+ static ssize_t mouse_speed_show(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int speed;
+ 
+-	speed = zotac_send_get_byte(zotac, CMD_GET_MOUSE_SPEED, 0, NULL, 0);
++	speed = zotac_send_get_byte(&zotac, CMD_GET_MOUSE_SPEED, 0, NULL, 0);
+ 	if (speed < 0)
+ 		return speed;
+ 
+@@ -1758,7 +1740,6 @@ static ssize_t mouse_speed_store(struct device *dev,
+ 				 struct device_attribute *attr, const char *buf,
+ 				 size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int speed_val;
+ 	u8 speed;
+ 	int ret;
+@@ -1771,7 +1752,7 @@ static ssize_t mouse_speed_store(struct device *dev,
+ 		return -EINVAL;
+ 
+ 	speed = (u8)speed_val;
+-	ret = zotac_send_set_command(zotac, CMD_SET_MOUSE_SPEED, 0, &speed, 1);
++	ret = zotac_send_set_command(&zotac, CMD_SET_MOUSE_SPEED, 0, &speed, 1);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1783,7 +1764,6 @@ static ssize_t motor_test_store(struct device *dev,
+ 				struct device_attribute *attr, const char *buf,
+ 				size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	u8 data[MOTOR_TEST_SIZE] = { 0 };
+ 
+ 	int left_trigger, right_trigger, left_rumble, right_rumble;
+@@ -1804,7 +1784,7 @@ static ssize_t motor_test_store(struct device *dev,
+ 	data[2] = (u8)left_rumble; /* Left Rumble Motor */
+ 	data[3] = (u8)right_rumble; /* Right Rumble Motor */
+ 
+-	ret = zotac_send_set_command(zotac, CMD_MOTOR_TEST, 0, data,
++	ret = zotac_send_set_command(&zotac, CMD_MOTOR_TEST, 0, data,
+ 				     MOTOR_TEST_SIZE);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1824,10 +1804,9 @@ static DEVICE_ATTR_RO_NAMED(motor_test_index, "motor_test_index");
+ static ssize_t profile_show(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int profile;
+ 
+-	profile = zotac_send_get_byte(zotac, CMD_GET_PROFILE, 0, NULL, 0);
++	profile = zotac_send_get_byte(&zotac, CMD_GET_PROFILE, 0, NULL, 0);
+ 	if (profile < 0)
+ 		return profile;
+ 
+@@ -1837,7 +1816,6 @@ static ssize_t profile_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t profile_store(struct device *dev, struct device_attribute *attr,
+ 			     const char *buf, size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int profile_id, ret;
+ 	u8 profile;
+ 
+@@ -1849,11 +1827,11 @@ static ssize_t profile_store(struct device *dev, struct device_attribute *attr,
+ 		return -EINVAL;
+ 
+ 	profile = (u8)profile_id;
+-	ret = zotac_send_set_command(zotac, CMD_SET_PROFILE, 0, &profile, 1);
++	ret = zotac_send_set_command(&zotac, CMD_SET_PROFILE, 0, &profile, 1);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = zotac_cfg_refresh(zotac);
++	ret = zotac_cfg_refresh(&zotac);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1864,10 +1842,9 @@ static DEVICE_ATTR_RW_NAMED(profile, "current");
+ static ssize_t profile_count_show(struct device *dev,
+ 				  struct device_attribute *attr, char *buf)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 
+ 	return sprintf(buf, "%d\n",
+-		       zotac_send_get_byte(zotac, CMD_GET_PROFILE_NUM, 0, NULL,
++		       zotac_send_get_byte(&zotac, CMD_GET_PROFILE_NUM, 0, NULL,
+ 					   0));
+ }
+ static DEVICE_ATTR_RO_NAMED(profile_count, "count");
+@@ -1877,7 +1854,6 @@ static ssize_t restore_profile_store(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     const char *buf, size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int val, ret;
+ 
+ 	ret = kstrtoint(buf, 10, &val);
+@@ -1888,7 +1864,7 @@ static ssize_t restore_profile_store(struct device *dev,
+ 		return -EINVAL;
+ 
+ 	dev_warn(dev, "Restoring profile, the device will reset and reconnect");
+-	ret = zotac_send_set_command(zotac, CMD_RESTORE_PROFILE, 0, NULL, 0);
++	ret = zotac_send_set_command(&zotac, CMD_RESTORE_PROFILE, 0, NULL, 0);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1910,7 +1886,6 @@ static ssize_t save_config_store(struct device *dev,
+ 				 struct device_attribute *attr, const char *buf,
+ 				 size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	int val, ret;
+ 
+ 	ret = kstrtoint(buf, 10, &val);
+@@ -1920,7 +1895,7 @@ static ssize_t save_config_store(struct device *dev,
+ 	if (val != 1)
+ 		return -EINVAL;
+ 
+-	ret = zotac_send_set_command(zotac, CMD_SAVE_CONFIG, 0, NULL, 0);
++	ret = zotac_send_set_command(&zotac, CMD_SAVE_CONFIG, 0, NULL, 0);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1931,29 +1906,26 @@ static DEVICE_ATTR_WO(save_config);
+ static ssize_t qam_mode_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+-
+-	if (!zotac || !zotac->gamepad)
++	if (!zotac.gamepad)
+ 		return -ENODEV;
+ 
+-	return sprintf(buf, "%d\n", zotac->gamepad->qam_mode ? 1 : 0);
++	return sprintf(buf, "%d\n", zotac.gamepad->qam_mode ? 1 : 0);
+ }
+ 
+ static ssize_t qam_mode_store(struct device *dev, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+-	struct zotac_device *zotac = dev_get_drvdata(dev);
+ 	bool value;
+ 	int ret;
+ 
+-	if (!zotac || !zotac->gamepad)
++	if (!zotac.gamepad)
+ 		return -ENODEV;
+ 
+ 	ret = kstrtobool(buf, &value);
+ 	if (ret)
+ 		return ret;
+ 
+-	zotac->gamepad->qam_mode = value;
++	zotac.gamepad->qam_mode = value;
+ 
+ 	return count;
+ }
+@@ -2085,7 +2057,7 @@ int zotac_cfg_refresh(struct zotac_device *zotac)
+ 	size_t data_len = sizeof(data);
+ 	int ret, i;
+ 
+-	if (!zotac || !zotac->cfg_data)
++	if (!zotac->cfg_data)
+ 		return -EINVAL;
+ 
+ 	cfg = zotac->cfg_data;
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+index aea0bb95e35c..c9c65e88ba16 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
++++ b/drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c
+@@ -39,6 +39,8 @@
+ #define HID_USAGE_F19 0x6E
+ #define HID_USAGE_F20 0x6F
+ 
++struct zotac_device zotac;
++
+ typedef void (*zotac_report_handler)(struct zotac_device *zotac, u8 *data,
+ 				     int size);
+ 
+@@ -210,7 +212,6 @@ static int zotac_process_report(struct zotac_device *zotac,
+ static int zotac_raw_event(struct hid_device *hdev, struct hid_report *report,
+ 			   u8 *data, int size)
+ {
+-	struct zotac_device *zotac = hid_get_drvdata(hdev);
+ 	int intf_num = get_interface_num(hdev);
+ 	int handled = 0;
+ 
+@@ -219,16 +220,16 @@ static int zotac_raw_event(struct hid_device *hdev, struct hid_report *report,
+ 
+ 	switch (intf_num) {
+ 	case ZOTAC_GAMEPAD_INTERFACE:
+-		if (zotac->gamepad) {
+-			zotac_process_gamepad_report(zotac, data, size);
++		if (zotac.gamepad) {
++			zotac_process_gamepad_report(&zotac, data, size);
+ 			handled = 1;
+ 		}
+ 		break;
+ 	case ZOTAC_DIAL_INTERFACE:
+ 		if (data[0] == ZOTAC_KBD_REPORT_ID)
+-			return process_keyboard_report(zotac, data, size);
++			return process_keyboard_report(&zotac, data, size);
+ 
+-		handled = zotac_process_report(zotac, dial_interface_handlers,
++		handled = zotac_process_report(&zotac, dial_interface_handlers,
+ 					       data, size);
+ 		break;
+ 	case ZOTAC_REPORT_INTERFACE:
+@@ -345,19 +346,14 @@ static int setup_mouse_input_device(struct zotac_device *zotac)
+ 
+ static int zotac_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ {
+-	struct zotac_device *zotac;
+ 	int intf_num, ret;
+ 	bool gamepad_initialized = false;
+ 	bool cfg_initialized = false;
+ 
+ 	intf_num = get_interface_num(hdev);
+ 
+-	zotac = devm_kzalloc(&hdev->dev, sizeof(*zotac), GFP_KERNEL);
+-	if (!zotac)
+-		return -ENOMEM;
+-
+-	zotac->hdev = hdev;
+-	hid_set_drvdata(hdev, zotac);
++	zotac.hdev = hdev;
++	hid_set_drvdata(hdev, &zotac);
+ 
+ 	ret = hid_parse(hdev);
+ 	if (ret) {
+@@ -384,22 +380,22 @@ static int zotac_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 	}
+ 
+ 	if (intf_num == ZOTAC_DIAL_INTERFACE) {
+-		ret = setup_wheel_input_device(zotac);
++		ret = setup_wheel_input_device(&zotac);
+ 		if (ret) {
+ 			hid_err(hdev, "Wheel input setup failed\n");
+ 			goto err_stop_hw;
+ 		}
+ 
+-		ret = setup_mouse_input_device(zotac);
++		ret = setup_mouse_input_device(&zotac);
+ 		if (ret) {
+ 			hid_err(hdev, "Mouse input setup failed\n");
+ 			/* Unregister wheel input before jumping to err_stop_hw */
+-			input_unregister_device(zotac->wheel_input);
+-			zotac->wheel_input = NULL;
++			input_unregister_device(zotac.wheel_input);
++			zotac.wheel_input = NULL;
+ 			goto err_stop_hw;
+ 		}
+ 
+-		ret = zotac_init_gamepad(zotac, zotac_get_usb_interface(hdev));
++		ret = zotac_init_gamepad(&zotac, zotac_get_usb_interface(hdev));
+ 		if (ret) {
+ 			hid_warn(hdev, "Gamepad initialization failed: %d\n",
+ 				 ret);
+@@ -409,16 +405,16 @@ static int zotac_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 	}
+ 
+ 	if (intf_num == ZOTAC_COMMAND_INTERFACE) {
+-		ret = zotac_cfg_init(zotac);
++		ret = zotac_cfg_init(&zotac);
+ 		if (ret) {
+ 			hid_warn(hdev, "Cfg data initialization failed: %d\n",
+ 				 ret);
+ 			goto err_stop_hw;
+ 		} else {
+ 			cfg_initialized = true;
+-			zotac_register_sysfs(zotac);
++			zotac_register_sysfs(&zotac);
+ 		}
+-		ret = zotac_rgb_init(zotac);
++		ret = zotac_rgb_init(&zotac);
+ 		if (ret)
+ 			hid_warn(hdev, "RGB initialization failed: %d\n", ret);
+ 	}
+@@ -429,9 +425,9 @@ static int zotac_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ err_stop_hw:
+ 	if (gamepad_initialized)
+-		zotac_cleanup_gamepad(zotac);
++		zotac_cleanup_gamepad(&zotac);
+ 	if (cfg_initialized)
+-		zotac_cfg_cleanup(zotac);
++		zotac_cfg_cleanup(&zotac);
+ 
+ 	hid_hw_stop(hdev);
+ err:
+@@ -450,15 +446,13 @@ static int zotac_input_configured(struct hid_device *hdev, struct hid_input *hi)
+ 
+ static int zotac_resubmit_urbs(struct hid_device *hdev)
+ {
+-	struct zotac_device *zotac = hid_get_drvdata(hdev);
+-	struct zotac_gamepad *gamepad = zotac ? zotac->gamepad : NULL;
+ 	int intf_num = get_interface_num(hdev);
+ 	int ret = 0;
+ 
+-	if (gamepad && gamepad->urbs[0] &&
++	if (zotac.gamepad && zotac.gamepad->urbs[0] &&
+ 	    (intf_num == ZOTAC_GAMEPAD_INTERFACE ||
+ 	     intf_num == ZOTAC_DIAL_INTERFACE)) {
+-		ret = usb_submit_urb(gamepad->urbs[0], GFP_NOIO);
++		ret = usb_submit_urb(zotac.gamepad->urbs[0], GFP_NOIO);
+ 		if (ret) {
+ 			hid_err(hdev, "Failed to resubmit gamepad URB: %d\n",
+ 				ret);
+@@ -479,32 +473,29 @@ static int zotac_resume(struct hid_device *hdev)
+ 
+ static int zotac_reset_resume(struct hid_device *hdev)
+ {
+-	struct zotac_device *zotac = hid_get_drvdata(hdev);
+ 	int intf_num = get_interface_num(hdev);
+ 
+ 	hid_info(hdev, "reset_resume called for interface %d\n", intf_num);
+ 
+-	if (zotac && zotac->led_rgb_dev && intf_num == ZOTAC_COMMAND_INTERFACE)
+-		zotac_rgb_resume(zotac);
++	if (zotac.led_rgb_dev && intf_num == ZOTAC_COMMAND_INTERFACE)
++		zotac_rgb_resume(&zotac);
+ 
+ 	return zotac_resubmit_urbs(hdev);
+ }
+ 
+ static int zotac_suspend(struct hid_device *hdev, pm_message_t message)
+ {
+-	struct zotac_device *zotac = hid_get_drvdata(hdev);
+-	struct zotac_gamepad *gamepad = zotac ? zotac->gamepad : NULL;
+ 	int intf_num = get_interface_num(hdev);
+ 	int i;
+ 
+ 	hid_dbg(hdev, "suspend called for interface %d\n", intf_num);
+ 
+-	if (gamepad && (intf_num == ZOTAC_GAMEPAD_INTERFACE ||
++	if (zotac.gamepad && (intf_num == ZOTAC_GAMEPAD_INTERFACE ||
+ 			intf_num == ZOTAC_DIAL_INTERFACE)) {
+ 		/* Kill all input URBs */
+ 		for (i = 0; i < ZOTAC_NUM_URBS; i++) {
+-			if (gamepad->urbs[i]) {
+-				usb_kill_urb(gamepad->urbs[i]);
++			if (zotac.gamepad->urbs[i]) {
++				usb_kill_urb(zotac.gamepad->urbs[i]);
+ 				hid_dbg(hdev,
+ 					"Gamepad URB %d killed for suspend\n",
+ 					i);
+@@ -513,8 +504,8 @@ static int zotac_suspend(struct hid_device *hdev, pm_message_t message)
+ 
+ 		/* Kill all force feedback URBs */
+ 		for (i = 0; i < ZOTAC_NUM_FF_URBS; i++) {
+-			if (gamepad->ff_urbs[i]) {
+-				usb_kill_urb(gamepad->ff_urbs[i]);
++			if (zotac.gamepad->ff_urbs[i]) {
++				usb_kill_urb(zotac.gamepad->ff_urbs[i]);
+ 				hid_dbg(hdev,
+ 					"Force feedback URB %d killed for suspend\n",
+ 					i);
+@@ -522,32 +513,31 @@ static int zotac_suspend(struct hid_device *hdev, pm_message_t message)
+ 		}
+ 	}
+ 
+-	if (zotac && zotac->led_rgb_dev && intf_num == ZOTAC_COMMAND_INTERFACE)
+-		zotac_rgb_suspend(zotac);
++	if (zotac.led_rgb_dev && intf_num == ZOTAC_COMMAND_INTERFACE)
++		zotac_rgb_suspend(&zotac);
+ 
+ 	return 0;
+ }
+ 
+ static void zotac_remove(struct hid_device *hdev)
+ {
+-	struct zotac_device *zotac = hid_get_drvdata(hdev);
+ 	int intf_num = get_interface_num(hdev);
+ 
+ 	dev_info(&hdev->dev, "Removing driver for interface %d", intf_num);
+ 
+-	if (zotac && intf_num == ZOTAC_COMMAND_INTERFACE) {
++	if (intf_num == ZOTAC_COMMAND_INTERFACE) {
+ 		dev_info(&hdev->dev, "Unregistering sysfs entries");
+-		zotac_unregister_sysfs(zotac);
++		zotac_unregister_sysfs(&zotac);
+ 	}
+ 
+-	if (zotac && zotac->gamepad)
+-		zotac_cleanup_gamepad(zotac);
++	if (zotac.gamepad)
++		zotac_cleanup_gamepad(&zotac);
+ 
+-	if (zotac && zotac->cfg_data)
+-		zotac_cfg_cleanup(zotac);
++	if (zotac.cfg_data)
++		zotac_cfg_cleanup(&zotac);
+ 
+-	if (zotac && zotac->led_rgb_dev)
+-		zotac_rgb_cleanup(zotac);
++	if (zotac.led_rgb_dev)
++		zotac_rgb_cleanup(&zotac);
+ 
+ 	hid_hw_stop(hdev);
+ }
+diff --git a/drivers/hid/zotac-zone-hid/zotac-zone.h b/drivers/hid/zotac-zone-hid/zotac-zone.h
+index a657b8c1515c..10024daeeaea 100644
+--- a/drivers/hid/zotac-zone-hid/zotac-zone.h
++++ b/drivers/hid/zotac-zone-hid/zotac-zone.h
+@@ -164,6 +164,7 @@ struct zotac_device {
+ 	struct zotac_rgb_dev *led_rgb_dev;
+ 	struct zotac_rgb_data led_rgb_data;
+ };
++extern struct zotac_device zotac;
+ 
+ void zotac_init_input_device(struct input_dev *input_dev,
+ 			     struct hid_device *hdev, const char *name);
+-- 
+2.49.0
+
