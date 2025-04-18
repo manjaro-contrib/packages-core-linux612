@@ -1,7 +1,7 @@
 From cfa788acf7c928304acb6e34ddd97b02be327ee7 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Wed, 5 Mar 2025 17:40:54 +1300
-Subject: [PATCH 1/8] zotac-zone-hid: initial impl
+Subject: [PATCH 1/9] zotac-zone-hid: initial impl
 
 The full base driver for HID and platform is implemented.
 This now requires splitting in to base commits for upstreaming.

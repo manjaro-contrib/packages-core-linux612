@@ -1,7 +1,7 @@
 From cae067e30ebb05f45ece8793c0833471085bb483 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Thu, 17 Apr 2025 23:03:55 +1200
-Subject: [PATCH 8/8] Test catch ctrl-alt-del
+Subject: [PATCH 8/9] Test catch ctrl-alt-del
 
 ---
  drivers/hid/zotac-zone-hid/zotac-zone-hid-core.c | 12 +++++++++++-

@@ -1,7 +1,7 @@
 From f52897af0ae1be7718cbf697009c66035f3eae25 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Thu, 17 Apr 2025 20:54:09 +1200
-Subject: [PATCH 6/8] test global static for zone base
+Subject: [PATCH 6/9] test global static for zone base
 
 ---
  .../zotac-zone-hid/zotac-zone-hid-config.c    | 120 +++++++-----------

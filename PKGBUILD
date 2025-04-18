@@ -11,7 +11,7 @@ _commit=
 _rc=
 pkgbase=linux${_basever}
 pkgver=6.12.23
-pkgrel=3
+pkgrel=4
 arch=('x86_64')
 url="https://www.kernel.org/"
 license=(GPL-2.0-only)
@@ -84,6 +84,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0006-test-global-static-for-zone-base.patch
         0007-Test-a-remap.patch
         0008-Test-catch-ctrl-alt-del.patch
+        0009-test-touchpad-maps.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -136,14 +137,15 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '76e10e85a62465a90f56ea523a0d033550e8f1ad4df18b7a2f42bbb47ed1665e'
-            '715a8ef4ce16c5add7d923f1458f491c3b29644b0a41a765f874784a76fa7acc'
-            '0830275c1c487c871e95d42d73b0f062b1b41f17aed566fe928cb08071fbdec1'
-            '03c6f2749a6f528fbe7858cbabb67ee82f36b6d309c083106a9e17d8710fc754'
-            '497e79339bd106c5a6a8144d655a279e212a806f44ce0e486bb15586c524104a'
-            '476432b1cc94ea930a0843d878d89aa3a0a47bac3adc48be537e66bb86b143a5'
-            'ba17455941c969dd4310eb40d4dfb57036906887d3b3288510094b63ed7508ee'
-            '5c8094d4a1b64bbd791cfb48ff2d63c48286a6b8bf340e7392281552d124e63a'
+            '3e1b54ecce80891bfe33a00cbb6d711c04d966b6a1cf5905b65f49c6d97abca6'
+            '90024982f152c6546723e4ad9cfc55bdbe38d791a9541a6298fc561cab6fd14b'
+            'bc1f994e364d5dde60dc3b38dc66ca7eb06e87699bb7ee977cda92928a387314'
+            'a2e11cf82fc8f4c60fa576dbbeb0420876f339d40fd6fab1193fff8012fb2402'
+            'a2501d96b24a016f90a4ea2a8d03fc1219de12e9071b20f104e218ac8388183d'
+            '40c3f5ad250a7202d664c53bf0e73dd55b859dc18aad9ce532b2a2502ac81c8f'
+            '964f328e34047d8002d748e5244ab44a7866b0ae63d88acf6fd1f98cf5502ecb'
+            '9c24cb3944a34a86e7c78aac498a4b23789caa2525abaea7cd21f80c8ce982a6'
+            'cd29c3c45cfe6d5ad996a08e50c4d5131c4ed0d12b269421af3da6fd64b62e98'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro
