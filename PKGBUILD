@@ -79,11 +79,11 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0001-zotac-zone-hid-initial-impl.patch
         0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
         0003-tmp-apply-zotac-screen-quirk.patch
-        0001-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=70d98a20386e778177c3c3d0baa1a5fa9e60f2ae
-        0002-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527b197bb41a8520e2242b060119975011264e5f
-        0003-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527a0f2bdcfe77fce22f006b97e42e4da3137c86
-        0004-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=38077562e0594a294eaf4d8e6bbd8c1c26c2540f
-        0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
+        #0001-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=70d98a20386e778177c3c3d0baa1a5fa9e60f2ae
+        #0002-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527b197bb41a8520e2242b060119975011264e5f
+        #0003-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527a0f2bdcfe77fce22f006b97e42e4da3137c86
+        #0004-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=38077562e0594a294eaf4d8e6bbd8c1c26c2540f
+        #0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -139,11 +139,6 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '1f3c9bc06654afac0322bcbf3643a270c3261bb5ca8e0ebda022027b03a00cd9'
             '1989508c0a60a2413c7463cc92808a7c4e5f11caeca77a0e82f2ee8260120067'
             '72693feee7da74944fbcf1a7e5382847ac4787331c304e57683dc54fe3d4e358'
-            '0bb6255eab4b077793e2d0d6ac65f9669df2e94d7575668d25edb1a1e66f35ed'
-            'df2094879f748d5da60e5bf30fafe69df9ffd71d855259aac629b962295c00e0'
-            '62a45d985048badef500b6a9b7300a2053662609c6c90f0764dad491ef7db191'
-            'c008250e0e976075d0175baf3c031d4b88a7e4a7910c3779a8bf65c89204f159'
-            'bec8f7172e447284c6d469c8095c3c10f3d9e2abf602e7c30bac0ca0075145d3'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro
