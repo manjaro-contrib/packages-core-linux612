@@ -75,19 +75,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0031-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
-        # Zotac Zone patches
-        0001-zotac-zone-hid-initial-impl.patch
-        0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
-        0003-tmp-apply-zotac-screen-quirk.patch
-        #0001-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=70d98a20386e778177c3c3d0baa1a5fa9e60f2ae
-        #0002-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527b197bb41a8520e2242b060119975011264e5f
-        #0003-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=527a0f2bdcfe77fce22f006b97e42e4da3137c86
-        #0004-6.14.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/drivers/gpu/drm/amd/display/dc/link/protocols/link_edp_panel_control.c?id=38077562e0594a294eaf4d8e6bbd8c1c26c2540f
-        #0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
-        # Steamdeck (OLED)
-        0001-steam-deck.patch
-        #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
-        #0002-steamdeck-oled-audio.patch
 )
 
 if [[ ! -z "$_commit" ]]; then
@@ -135,11 +122,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '9baa3f0cad34916f0599efeaa67170ee470f0ca1453666aa2e37bc62a843f277'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
-            'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '1f3c9bc06654afac0322bcbf3643a270c3261bb5ca8e0ebda022027b03a00cd9'
-            '1989508c0a60a2413c7463cc92808a7c4e5f11caeca77a0e82f2ee8260120067'
-            '72693feee7da74944fbcf1a7e5382847ac4787331c304e57683dc54fe3d4e358'
-            'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
+            'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e')
 
 export KBUILD_BUILD_HOST=manjaro
 export KBUILD_BUILD_USER=$pkgbase
