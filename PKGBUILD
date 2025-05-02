@@ -79,6 +79,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0001-zotac-zone-hid-initial-impl.patch
         0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
         0003-tmp-apply-zotac-screen-quirk.patch
+        0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
         # Steamdeck (OLED)
         0001-steam-deck.patch
         #0001-HID_hid-steam_Fix_use-after-free_when_detaching_device.patch
@@ -131,9 +132,10 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
             'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
-            '84decd4d1c577a99096af6f4a4fb83f39a04c1d155e3d7aec352769875c55f90'
-            '6295b2fc55484c10b20d5c86c3eb4cdb9e6357a53133100bb15c38f083c24650'
-            '15b829d7e43a50dbae99aca5508aaeff98fda2239242fd008391504c39c6c0e5'
+            'eae6a97416c5354fcc20e43f9a086b6f5d56f9b488e7f59770b237f8df5fdba8'
+            '1989508c0a60a2413c7463cc92808a7c4e5f11caeca77a0e82f2ee8260120067'
+            '72693feee7da74944fbcf1a7e5382847ac4787331c304e57683dc54fe3d4e358'
+            '1fc359d23a921b72e34d5b7a959270ffa69cb342d05021daab8ac48192233df9'
             'f8cf8ad3e17857b51c3f7dd954eb5ac7ba44bfe0302a40e70b2c496573407edf')
 
 export KBUILD_BUILD_HOST=manjaro
