@@ -75,6 +75,13 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0031-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
+        # Zotac Zone patches
+        0001-zotac-zone-hid-initial-impl.patch
+        0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
+        0003-tmp-apply-zotac-screen-quirk.patch
+        #0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
+        0005-zotac-shift-rgb-controls-to-led-class-sysfs.patch
+        0006-Fix-RGB-off-by-2.patch
 )
 
 if [[ ! -z "$_commit" ]]; then
@@ -87,7 +94,7 @@ fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'b170114443fe011f4c36a1cd1da35a500ce28628625284c8ee0e52f9e9e3b475'
-            'add41810e4e62b04b26117177ac5044ded9228a277e0de43227d9e46d49134d9'
+            'd027d9b5f1b27ffba11218f7a18eec9898d1eb5235c44c25d746f4916d6b395b'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
@@ -95,7 +102,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'c5288dd3057ced81018db254c94fd7ee8dfc5d4687064b5ae234d56f04ad1069'
             'a4ec35907f4d532b45599821a74e7703e21a4df1677a3c057c433d13b31816a4'
             'a1c2e372d771b1bd42cb5f1e51718ea2c8af4fa911f4fd640d8d10cbf1e59cb0'
-            'ac9c7fbe9db664f933c8153334cacbfc6f25946ea0488800de4ac4e9c93e4dd0'
+            '76eb9ac8f1a9928fa1f2222171633801898a5f89a139241443ec3c7df46b8531'
             '7893450bfae2bba7a1d20d29ad1791cadde32197297acb84bbbed1d952d24052'
             '5a5a0f80e76b693f0e06d1644bb81b0f3720fca7e14435fc06ecfaa187380602'
             '3fac0fb57c769bfef57d71d78d1b5f681947c2146ef30d7a9afdc87805eda058'
@@ -122,7 +129,12 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '9baa3f0cad34916f0599efeaa67170ee470f0ca1453666aa2e37bc62a843f277'
             '69be0b12d0df47866b65d969f1354acda58fb09d576763431ec3b1bc120c7cf1'
             '353af1b0411c4400277cf49270d1183e1678d46e5a77ea043be948fa1cbb9db2'
-            'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e')
+            'e58b6631da6dcc302984c30882276026a449228833cfb01d157a85ff1064080e'
+            '1c3eef7abf29d03c4c9866c216816c4384aeb2f204967086bf04b99e66968473'
+            'd84ae4afa1f7e749db116992de2a8a8e0cf51ccb4c930add86b9fde900bc4b9d'
+            '8b672e768589568364632721da69f6e1b773fc9c18de20170d63989ee3222886'
+            'd85d6c277ab614c5cd3d05723a0f54b7f824c934ae92facb1cbb88b3958379ab'
+            '8cf2f01e834b65f45c42c56597953444c24b6d38e7fb6fe5c1d6edb940ef19fd')
 
 export KBUILD_BUILD_HOST=manjaro
 export KBUILD_BUILD_USER=$pkgbase
