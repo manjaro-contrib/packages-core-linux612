@@ -39,7 +39,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
-        0103_default_to_max_ASLR_bits.patch
+        0006-Revert-drm-amd-display-more-liberal-vmin-vmax-update.patch
         # Realtek patch
         0999-patch_realtek.patch
         # ROG ALLY Patches (wip/ally-6.12)
@@ -94,10 +94,10 @@ fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'b170114443fe011f4c36a1cd1da35a500ce28628625284c8ee0e52f9e9e3b475'
-            'add41810e4e62b04b26117177ac5044ded9228a277e0de43227d9e46d49134d9'
+            'b8c7bb10a324f36c84c72ad8ac2a531eecfd6b971820eba24d8e1e98c722fb17'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
-            '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
+            '461e0f40f118d10a431f54cb13fd5ead8a66d17a6cb0abc079ffec963831d946'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
             'c5288dd3057ced81018db254c94fd7ee8dfc5d4687064b5ae234d56f04ad1069'
             'a4ec35907f4d532b45599821a74e7703e21a4df1677a3c057c433d13b31816a4'
