@@ -39,7 +39,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
-        0006-Revert-drm-amd-display-more-liberal-vmin-vmax-update.patch
+        #0006-Revert-drm-amd-display-more-liberal-vmin-vmax-update.patch
         # Realtek patch
         0999-patch_realtek.patch
         # ROG ALLY Patches (wip/ally-6.12)
