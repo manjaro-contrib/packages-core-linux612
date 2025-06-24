@@ -174,13 +174,14 @@ build() {
 _package() {
   pkgdesc="The Linux $_basekernel kernel and modules"
   depends=(
-    coreutils
-    initramfs
-    kmod
+    'coreutils'
+    'initramfs'
+    'kmod'
   )
   optdepends=(
-    'wireless-regdb: to set the correct wireless channels of your country'
     'linux-firmware: firmware images needed for some devices'
+    'scx-scheds: to use sched-ext schedulers'
+    'wireless-regdb: to set the correct wireless channels of your country'
   )
   provides=(
     "linux=${pkgver}"
