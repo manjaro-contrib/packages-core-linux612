@@ -45,6 +45,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # ROG ALLY Patches (wip/ally-6.12)
         0001-drm-amd-display-Avoid-divide-by-zero-by-initializing.patch
         0002-Tmp-add-GA605W-H7606W-to-AMD-PMF-quirks.patch
+        revert-upstream-hid-asus-check-ROG-Ally-MCU-version-and-warn.patch
         0004-hid-asus-check-ROG-Ally-MCU-version-and-warn.patch
         0005-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
         0006-hid-asus-set-mcu-hack-to-off-if-required-MCU-version.patch
@@ -100,6 +101,7 @@ sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
             'c5288dd3057ced81018db254c94fd7ee8dfc5d4687064b5ae234d56f04ad1069'
             'a4ec35907f4d532b45599821a74e7703e21a4df1677a3c057c433d13b31816a4'
+            '8a4765598fd6090a5cbfddb40470362d99968463a47e605f9ee4e45be06d25c0'
             'a1c2e372d771b1bd42cb5f1e51718ea2c8af4fa911f4fd640d8d10cbf1e59cb0'
             '76eb9ac8f1a9928fa1f2222171633801898a5f89a139241443ec3c7df46b8531'
             '7893450bfae2bba7a1d20d29ad1791cadde32197297acb84bbbed1d952d24052'
