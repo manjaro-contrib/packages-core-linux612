@@ -45,6 +45,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         # ROG ALLY Patches (wip/ally-6.12)
         0001-drm-amd-display-Avoid-divide-by-zero-by-initializing.patch
         0002-Tmp-add-GA605W-H7606W-to-AMD-PMF-quirks.patch
+        0004-hid-asus-check-ROG-Ally-MCU-version-and-warn.patch
         0005-platform-x86-asus-wmi-Refactor-Ally-suspend-resume.patch
         0006-hid-asus-set-mcu-hack-to-off-if-required-MCU-version.patch
         0007-hid-asus-ally-Add-joystick-LED-ring-support.patch
