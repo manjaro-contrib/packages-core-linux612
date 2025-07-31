@@ -36,10 +36,12 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
+        # Upstream Patches
+        # https://gitlab.freedesktop.org/drm/amd/-/issues/4441
+        0000-drm-amdgpu-discovery-optionally-use-fw-based-ip-discovery.patch::https://lore.kernel.org/stable/20250730155900.22657-1-alexander.deucher@amd.com/raw
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
-        #0006-Revert-drm-amd-display-more-liberal-vmin-vmax-update.patch
         # Realtek patch
         0999-patch_realtek.patch
         # ROG ALLY Patches (wip/ally-6.12)
@@ -76,13 +78,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         0031-hda-tas2781-add-speaker-id-check-for-ASUS-projects.patch::https://lore.kernel.org/lkml/20241123073718.475-1-baojun.xu@ti.com/raw
         # OrangePi Neo patches
         0001-iio_imu_Add_driver_for_Bosch_BMI260_IMU.patch
-        # Zotac Zone patches
-        #0001-zotac-zone-hid-initial-impl.patch
-        #0002-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
-        #0003-tmp-apply-zotac-screen-quirk.patch
-        #0004-TEMPORARY-terrible-hack-for-zotac-screen-while-debug.patch
-        #0005-zotac-shift-rgb-controls-to-led-class-sysfs.patch
-        #0006-Fix-RGB-off-by-2.patch
 )
 
 if [[ ! -z "$_commit" ]]; then
@@ -96,6 +91,7 @@ fi
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '96660e490d65ab15585c131487f419db7221c85b5f36c51b3cc287c225670843'
             'd96e9a79ba57d23fe155db6db443f3a8fffe34ea7e6d8488281a6a12b316810b'
+            'e3f97ec9271ad09de19ff0611d22ce10e6314b5984379dc6ac4bbd443b26b936'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
