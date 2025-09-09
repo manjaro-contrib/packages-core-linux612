@@ -37,8 +37,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
-        # https://lore.kernel.org/stable/20250829193652.1925084-1-alexander.deucher@amd.com/
-        revert-71598a5.patch::https://lore.kernel.org/stable/20250829193652.1925084-1-alexander.deucher@amd.com/raw
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -91,7 +89,6 @@ fi
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '19ca82e2324d3943f69f6d2c6422159eb058f865a81bb6362d5999c376fff406'
             '9014da20265360df63a34fe87563a6fd17406656a47c21d8cf7b75532238b7c0'
-            '38106821ec0f9557071cc3bfd79c08f887c7a21c7549cf4885e0a64813d8ebff'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
