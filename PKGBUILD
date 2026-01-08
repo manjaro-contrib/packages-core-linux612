@@ -37,7 +37,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
-        0000-revert_drm-amd-display_fix_pbn_to_kbps_Conversion.patch::https://lore.kernel.org/all/20251209171810.2514240-1-mario.limonciello@amd.com/raw
+        #0000-revert_drm-amd-display_fix_pbn_to_kbps_Conversion.patch::https://lore.kernel.org/all/20251209171810.2514240-1-mario.limonciello@amd.com/raw
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -90,7 +90,7 @@ fi
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             '8fe6129933218733ffd055546d80dba92ca738a6f1379629d06b36033a10602b'
             '550258449d01179dbb3c00317b8e8823d36354f9a73c33a7a12749bf0b15f3f9'
-            '90c2a4795664360d704ac22eea75dc7b40543ba5755dc11f0a122828f9e55006'
+            #'90c2a4795664360d704ac22eea75dc7b40543ba5755dc11f0a122828f9e55006'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
