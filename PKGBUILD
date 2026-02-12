@@ -9,8 +9,9 @@ _basever=${_basekernel//.}
 _kernelname=-MANJARO
 _commit=
 _rc=
+_pkgver=6.12.70
 pkgbase=linux${_basever}
-pkgver=6.12.70
+pkgver=6.12.71
 pkgrel=1
 arch=('x86_64')
 url="https://www.kernel.org/"
@@ -34,10 +35,13 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}.tar.gz
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}-${_rc}.tar.gz
         #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
-        https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
+        https://www.kernel.org/pub/linux/kernel/v6.x/patch-${_pkgver}.xz
         config
         # Upstream Patches
-        #0000-revert_drm-amd-display_fix_pbn_to_kbps_Conversion.patch::https://lore.kernel.org/all/20251209171810.2514240-1-mario.limonciello@amd.com/raw
+        0001-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4ce768ac429ec1c2d4ba63a408fed454ed12b248
+        0002-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ceab30fec9ed21b343c5b817db694d7e8c75824c
+        0003-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=aa9f6f353bcc3eb0ae96ff1bbaf77ced08a9b932
+        0004-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ae591174b1f2e6b81ffe182fb621bba910bfb44e
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -90,6 +94,10 @@ fi
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'ef894c56842283cdacd8c129ac77d136e37d0a097a11b9a4eff09cb64d5c6e5b'
             'c37d8b1f4fa822d0b7c64d218e77bd22657cc46ea441989ae4dd238d027e83bd'
+            '77ad455754ca289f3de5f48f402e155c6f6577db221cdd38aa6b01a68af35c78'
+            '3df05796e7f76b3ea1125cf83edc7a64c76226c500689064623917cef9c9c47e'
+            '9afacb51812a4d354ac06a68c7d8993c6cc63f99391d63105c44151f65ba041d'
+            '9d0361dcf43f90b00267a0c1610c2cff14d4d2d6b48abaef2fac4882287b595e'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
@@ -137,9 +145,9 @@ prepare() {
   echo "-$pkgrel" > localversion.10-pkgrel
 
   # add upstream patch
-  if [[ -z "$_rc" ]] && [[ -e "../patch-${pkgver}" ]]; then
+  if [[ -z "$_rc" ]] && [[ -e "../patch-${_pkgver}" ]]; then
     msg "add upstream patch"
-    patch -p1 -i "../patch-${pkgver}"
+    patch -p1 -i "../patch-${_pkgver}"
   fi
 
   local src
