@@ -9,7 +9,6 @@ _basever=${_basekernel//.}
 _kernelname=-MANJARO
 _commit=
 _rc=
-_pkgver=6.12.70
 pkgbase=linux${_basever}
 pkgver=6.12.71
 pkgrel=1
@@ -38,10 +37,10 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${_pkgver}.xz
         config
         # Upstream Patches
-        0001-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4ce768ac429ec1c2d4ba63a408fed454ed12b248
-        0002-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ceab30fec9ed21b343c5b817db694d7e8c75824c
-        0003-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=aa9f6f353bcc3eb0ae96ff1bbaf77ced08a9b932
-        0004-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ae591174b1f2e6b81ffe182fb621bba910bfb44e
+        #0001-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4ce768ac429ec1c2d4ba63a408fed454ed12b248
+        #0002-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ceab30fec9ed21b343c5b817db694d7e8c75824c
+        #0003-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=aa9f6f353bcc3eb0ae96ff1bbaf77ced08a9b932
+        #0004-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ae591174b1f2e6b81ffe182fb621bba910bfb44e
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -145,9 +144,9 @@ prepare() {
   echo "-$pkgrel" > localversion.10-pkgrel
 
   # add upstream patch
-  if [[ -z "$_rc" ]] && [[ -e "../patch-${_pkgver}" ]]; then
+  if [[ -z "$_rc" ]] && [[ -e "../patch-${pkgver}" ]]; then
     msg "add upstream patch"
-    patch -p1 -i "../patch-${_pkgver}"
+    patch -p1 -i "../patch-${pkgver}"
   fi
 
   local src
