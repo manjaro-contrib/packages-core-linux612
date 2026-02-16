@@ -34,7 +34,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}.tar.gz
         #https://github.com/torvalds/linux/archive/refs/tags/v${_basekernel}-${_rc}.tar.gz
         #https://github.com/torvalds/linux/archive/${_commit}.tar.gz
-        https://www.kernel.org/pub/linux/kernel/v6.x/patch-${_pkgver}.xz
+        https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
         #0001-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4ce768ac429ec1c2d4ba63a408fed454ed12b248
