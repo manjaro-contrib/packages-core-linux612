@@ -10,7 +10,7 @@ _kernelname=-MANJARO
 _commit=
 _rc=
 pkgbase=linux${_basever}
-pkgver=6.12.75
+pkgver=6.12.76
 pkgrel=1
 arch=('x86_64')
 url="https://www.kernel.org/"
@@ -37,10 +37,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
-        #0001-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4ce768ac429ec1c2d4ba63a408fed454ed12b248
-        #0002-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ceab30fec9ed21b343c5b817db694d7e8c75824c
-        #0003-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=aa9f6f353bcc3eb0ae96ff1bbaf77ced08a9b932
-        #0004-6.12.71.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=ae591174b1f2e6b81ffe182fb621bba910bfb44e
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -91,7 +87,7 @@ else
 fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
-            '98a07f5a89a2fe02ce35481ae0bc5a122805b4f3e220d0a4058fa431573a01f1'
+            '24a58febc543dcd2b928fbe36508a1eea3639fc31cd446c6f5cdda5834d18db6'
             '56277facb117b4dfff3d37bcbf4286b27cee94c2a1a87bbf87a8179ccdfb4af5'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
