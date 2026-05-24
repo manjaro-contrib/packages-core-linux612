@@ -37,8 +37,6 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_basekernel}.tar.x
         https://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz
         config
         # Upstream Patches
-        # https://lore.kernel.org/linux-bluetooth/01ffb0cc-dcf6-4e60-adf3-fbb96e0666d0@leemhuis.info/
-        0001-Bluetooth-btmtk-accept-too-short-WMT-FUNC_CTRL-events.patch
         # ARCH Patches
         0101-ZEN_Add_sysctl_and_CONFIG_to_disallow_unprivileged_CLONE_NEWUSER.patch
         0102-drivers-firmware-skip-simpledrm-if-nvidia-drm.modese.patch
@@ -91,7 +89,6 @@ fi
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
             'cd516a29d46865fc14f5bb548d3e2e80138f21d0e6fe3a7f08586f71050cf9d9'
             'e89b62a38fa1d758771c855767ba074738a7e5e333481992b64dec80bfe0658c'
-            '9f4a608ea5ff6f119f1448ddac1917e11b6eb3d696d18f2b5e934a1c8e3f3d65'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
             'b88d42565ce771cb6c8f98b7c05aada6b8024578a1985e5772dc5a2d07facee0'
