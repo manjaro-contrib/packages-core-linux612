@@ -10,7 +10,7 @@ _kernelname=-MANJARO
 _commit=
 _rc=
 pkgbase=linux${_basever}
-pkgver=6.12.91
+pkgver=6.12.92
 pkgrel=1
 arch=('x86_64')
 url="https://www.kernel.org/"
@@ -87,7 +87,7 @@ else
 fi
 
 sha256sums=('b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb'
-            'cd516a29d46865fc14f5bb548d3e2e80138f21d0e6fe3a7f08586f71050cf9d9'
+            '2eaa95a905c7c6f172a9736f8af0d73d1d2856f75f3025e8200549d12ae489a5'
             'e89b62a38fa1d758771c855767ba074738a7e5e333481992b64dec80bfe0658c'
             '888a89ec67433ddfd71ba187a7356ca60270dbe51d6df7211e3930f13121ba8c'
             '934bc233684c45860251bb75433d671b23fa784c891ab3a1ef10d5bc761156b6'
